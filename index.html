@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f0f0e">
+<title>Naturaltech · Prospecção</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  /* ===== FitFeed Design System =====
+     Fundo branco · acentos verde-lima (#E6FDA6) e rosa (#EA91F2)
+     Títulos: Instrument Serif · Texto: Nohemi (fallback sans até hospedar os arquivos)
+     Para usar a Nohemi de verdade, hospede os .otf e adicione um @font-face. */
+  :root{
+    --bg:#ffffff; --surface:#ffffff; --line:#ececec; --line-strong:#dcdcdc;
+    --ink:#111111; --ink-2:#6b6b6b; --ink-3:#9a9a9a;
+    --lime:#e6fda6; --lime-deep:#5f7a00; --lime-tint:#f6ffe0;
+    --pink:#ea91f2; --pink-deep:#a52fb5; --pink-tint:#fdeaff;
+    /* acentos semânticos mapeados na marca */
+    --prio:#e6fda6; --prio-ink:#46590a;
+    --done:#5f7a00; --done-bg:#f6ffe0;
+    --contact:#a52fb5; --contact-bg:#fdeaff;
+    --follow:#d4537e; --follow-bg:#fbeaf0;
+    --r:14px;
+    --f-title:"Instrument Serif", ui-serif, Georgia, serif;
+    --f-body:"Nohemi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0f0f0f; --surface:#1a1a1a; --line:#2b2b2b; --line-strong:#3a3a3a;
+      --ink:#f4f4f2; --ink-2:#a8a8a4; --ink-3:#727270;
+      --lime-tint:#1c2400; --pink-tint:#2a0c2e;
+      --prio:#e6fda6; --prio-ink:#0f0f0f;
+      --done:#bce65a; --done-bg:#1c2400;
+      --contact:#ea91f2; --contact-bg:#2a0c2e;
+      --follow:#ef8aae; --follow-bg:#2e0f1c;
+    }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:var(--f-body);
+    font-size:16px; line-height:1.4; padding-bottom:96px;
+  }
+  header{
+    position:sticky; top:0; z-index:10;
+    background:var(--bg); border-bottom:1px solid var(--line);
+    padding:16px 18px 12px;
+  }
+  .eyebrow{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); font-weight:600}
+  .sync-dot{display:inline-block; width:7px; height:7px; border-radius:99px; background:var(--ink-3); margin-left:6px; vertical-align:middle}
+  .sync-dot.ok{background:var(--done)} .sync-dot.sync{background:var(--amber,#ba7517)} .sync-dot.off{background:var(--ink-3)} .sync-dot.err{background:var(--follow)}
+  .sync-txt{font-size:10px; letter-spacing:.04em; color:var(--ink-3); margin-left:4px; text-transform:none}
+  h1{font-family:var(--f-title); font-size:32px; font-weight:400; margin:2px 0 2px; letter-spacing:0; line-height:1.05}
+  .sub{font-size:13px; color:var(--ink-2)}
+  .user-row{display:flex; align-items:center; gap:8px; margin-top:12px}
+  .user-row .lbl{font-size:11.5px; color:var(--ink-3); font-weight:600; text-transform:uppercase; letter-spacing:.06em}
+  .user-seg{display:flex; gap:4px; background:var(--line); padding:3px; border-radius:99px; flex:1}
+  .user-seg button{
+    flex:1; font-size:13.5px; font-weight:600; padding:7px 4px; border-radius:99px;
+    border:none; background:transparent; color:var(--ink-2); cursor:pointer;
+  }
+  .user-seg button.on{background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .progress{margin-top:12px; height:6px; border-radius:99px; background:var(--line); overflow:hidden}
+  .progress > i{display:block; height:100%; width:0; background:var(--done); border-radius:99px; transition:width .35s ease}
+  .progress-label{font-size:11.5px; color:var(--ink-2); margin-top:6px; display:flex; justify-content:space-between}
+
+  .filters{display:flex; gap:7px; padding:12px 18px 4px; overflow-x:auto; -webkit-overflow-scrolling:touch}
+  .filters::-webkit-scrollbar{display:none}
+  .chip{
+    flex:0 0 auto; font-size:13px; padding:7px 14px; border-radius:99px;
+    border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2);
+    font-weight:550; cursor:pointer; white-space:nowrap;
+  }
+  .chip.on{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+  .chip-count{display:inline-block; background:var(--line-strong); color:var(--ink-2); font-size:11px; font-weight:700; padding:1px 7px; border-radius:99px; margin-left:4px}
+  .chip.on .chip-count{background:rgba(255,255,255,.25); color:var(--bg)}
+
+  main{padding:8px 14px 0}
+  .group-h{font-size:12px; font-weight:650; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); margin:18px 6px 8px}
+
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+    padding:13px 14px 12px; margin-bottom:10px; transition:opacity .2s;
+  }
+  .card.is-done{opacity:.62}
+  .card-top{display:flex; align-items:flex-start; gap:10px}
+  .name-wrap{flex:1; min-width:0}
+  .name{font-size:16.5px; font-weight:600; letter-spacing:-.01em; display:flex; align-items:center; gap:7px; flex-wrap:wrap}
+  .star{color:var(--lime-deep); font-size:15px}
+  .loc{font-size:13px; color:var(--ink-2); margin-top:2px}
+  .loc.unknown{color:var(--ink-3); font-style:italic}
+  .size{font-size:12px; color:var(--ink-2); margin-top:4px}
+  .size span{font-size:9.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-3); background:var(--line); padding:2px 5px; border-radius:5px; margin-right:5px}
+  .card.is-prio{border-color:var(--lime); border-width:2px}
+
+  .assign-row{display:flex; align-items:center; gap:6px; margin-top:11px; flex-wrap:wrap}
+  .assign-lbl{font-size:11.5px; color:var(--ink-3); font-weight:600; text-transform:uppercase; letter-spacing:.05em; margin-right:1px}
+  .assign-btn{
+    font-size:12.5px; font-weight:600; padding:5px 11px; border-radius:99px;
+    border:1px solid var(--line-strong); background:transparent; color:var(--ink-2); cursor:pointer;
+  }
+  .assign-btn.on{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+  .prio-btn{
+    margin-left:auto; font-size:12px; font-weight:600; padding:5px 11px; border-radius:99px;
+    border:1px solid var(--line-strong); background:transparent; color:var(--ink-2); cursor:pointer; white-space:nowrap;
+  }
+  .prio-btn.on{background:var(--prio); color:var(--prio-ink); border-color:var(--prio)}
+
+  .client-tag{font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; background:var(--contact-bg); color:var(--contact); padding:3px 7px; border-radius:6px}
+  .client-note{font-size:12px; color:var(--contact); margin-top:2px; font-weight:550}
+
+  .value-row{display:flex; align-items:center; gap:9px; margin-top:11px; background:var(--follow-bg); padding:9px 11px; border-radius:10px}
+  .value-lbl{font-size:11.5px; font-weight:650; color:var(--follow); text-transform:uppercase; letter-spacing:.04em; white-space:nowrap}
+  .value-input{flex:1; border:1px solid var(--line-strong); border-radius:8px; padding:8px 10px; font-size:15px; background:var(--surface); color:var(--ink); font-family:inherit; min-width:0}
+  .meeting-row{display:flex; align-items:center; gap:9px; margin-top:8px; background:var(--follow-bg); padding:9px 11px; border-radius:10px}
+  .meeting-row .value-lbl{display:inline-flex; align-items:center; gap:4px}
+  .meeting-row .value-lbl i{font-size:14px}
+
+  .mark-lost{margin-top:10px; width:100%; font-size:12.5px; font-weight:600; padding:8px; border-radius:9px; border:1px solid var(--line); background:transparent; color:var(--ink-3); cursor:pointer}
+  .mark-lost:active{background:var(--follow-bg); color:var(--follow); border-color:var(--follow)}
+  .trash-btn{flex:0 0 auto; height:30px; padding:0 8px; border-radius:8px; border:1px solid var(--line-strong); background:transparent; color:var(--ink-3); cursor:pointer; display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; margin-right:7px}
+  .trash-btn i{font-size:15px}
+  .trash-btn.armed{background:var(--follow-bg); border-color:var(--follow); color:var(--follow)}
+  .lost-confirm{display:none; margin-top:10px; background:var(--follow-bg); border:1px solid var(--follow); border-radius:10px; padding:11px}
+  .lost-confirm.show{display:block}
+  .lc-h{font-size:12.5px; font-weight:600; color:var(--follow); margin-bottom:8px; line-height:1.35}
+  .lc-btns{display:flex; gap:8px; margin-top:9px}
+  .lc-cancel{flex:1; padding:9px; border-radius:8px; border:1px solid var(--line-strong); background:transparent; color:var(--ink-2); font-size:13px; font-weight:600; cursor:pointer}
+  .lc-confirm{flex:1.6; padding:9px; border-radius:8px; border:none; background:var(--follow); color:#fff; font-size:13px; font-weight:650; cursor:pointer}
+  .card.is-lost{opacity:.85; border-color:var(--line)}
+  .lost-box{margin-top:11px; background:var(--bg); border:1px dashed var(--line-strong); border-radius:10px; padding:11px}
+  .lost-h{font-size:11.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3); margin-bottom:8px}
+  .lost-reason{width:100%; border:1px solid var(--line-strong); border-radius:8px; padding:8px 10px; font-size:14px; background:var(--surface); color:var(--ink); font-family:inherit; margin-bottom:8px}
+  .restore-btn{font-size:12.5px; font-weight:600; padding:7px 12px; border-radius:8px; border:1px solid var(--line-strong); background:transparent; color:var(--ink-2); cursor:pointer}
+
+  .add-client{display:block; margin:12px auto 2px; font-size:13.5px; font-weight:600; padding:9px 18px; border-radius:99px; border:1px dashed var(--line-strong); background:transparent; color:var(--ink-2); cursor:pointer}
+  .action-bar{display:flex; gap:10px; align-items:center; justify-content:center; padding:10px 16px 2px}
+  .action-bar .add-client{margin:0}
+  .lost-tab{display:inline-flex; align-items:center; gap:6px; font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:99px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); cursor:pointer}  .lost-tab i{font-size:15px}
+  .lost-tab.on{background:var(--follow-bg); color:var(--follow); border-color:var(--follow)}
+  .lost-count{display:inline-grid; place-items:center; min-width:20px; height:20px; padding:0 6px; background:var(--follow); color:#fff; font-size:11.5px; font-weight:700; border-radius:99px}
+  .won-tab{display:inline-flex; align-items:center; gap:6px; font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:99px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); cursor:pointer}
+  .won-tab i{font-size:15px}
+  .won-tab.on{background:var(--done-bg); color:var(--done); border-color:var(--done)}
+  .won-count{display:inline-grid; place-items:center; min-width:20px; height:20px; padding:0 6px; background:var(--done); color:#fff; font-size:11.5px; font-weight:700; border-radius:99px}
+  .meet-tab{display:inline-flex; align-items:center; gap:6px; font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:99px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); cursor:pointer}
+  .meet-tab i{font-size:15px}
+  .meet-tab.on{background:var(--contact-bg); color:var(--contact); border-color:var(--contact)}
+  .meet-count{display:inline-grid; place-items:center; min-width:20px; height:20px; padding:0 6px; background:var(--contact); color:#fff; font-size:11.5px; font-weight:700; border-radius:99px}
+  .meeting-warn{display:none; font-size:12px; color:var(--follow); margin-top:6px; padding-left:2px; font-weight:550}
+  .meeting-warn.show{display:block}
+  .meet-card{display:flex; align-items:center; gap:13px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:12px 14px; margin-bottom:10px}
+  .meet-time{flex:0 0 auto; text-align:center; background:var(--contact-bg); border-radius:10px; padding:8px 11px; min-width:64px}
+  .meet-hour{font-size:17px; font-weight:700; color:var(--contact); line-height:1.1}
+  .meet-day{font-size:11px; color:var(--contact); font-weight:600; margin-top:2px}
+  .meet-info{flex:1; min-width:0}
+  .meet-name{font-size:16px; font-weight:600; color:var(--ink)}
+  .meet-meta{font-size:12.5px; color:var(--ink-2); margin-top:2px}
+  .meet-clear{flex:0 0 auto; width:30px; height:30px; border-radius:8px; border:1px solid var(--line-strong); background:transparent; color:var(--ink-3); cursor:pointer; display:grid; place-items:center; font-size:15px}
+  .mark-won{margin-top:10px; width:100%; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:12.5px; font-weight:600; padding:8px; border-radius:9px; border:1px solid var(--done); background:transparent; color:var(--done); cursor:pointer}
+  .won-confirm{display:none; margin-top:10px; background:var(--done-bg); border:1px solid var(--done); border-radius:10px; padding:11px}
+  .won-confirm.show{display:block}
+  .wc-h{font-size:12.5px; font-weight:600; color:var(--done); margin-bottom:8px; line-height:1.35}
+  .wc-confirm{flex:1.6; padding:9px; border-radius:8px; border:none; background:var(--done); color:#fff; font-size:13px; font-weight:650; cursor:pointer}
+  .won-value{width:100%; border:1px solid var(--done); border-radius:8px; padding:9px 11px; font-size:15px; background:var(--surface); color:var(--ink); font-family:inherit}
+  .card.is-won{border-color:var(--done)}
+  .won-box{margin-top:11px; background:var(--done-bg); border:1px solid var(--done); border-radius:10px; padding:11px}
+  .won-h{font-size:11.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--done); margin-bottom:8px}
+  .won-val-lbl{display:block; font-size:11.5px; font-weight:600; color:var(--done); margin-bottom:5px}
+  .won-box .won-value{margin-bottom:8px}
+
+  .modal-bg{display:none; position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.45); align-items:flex-end; justify-content:center; padding:0}
+  .modal-bg.show{display:flex}
+  .modal{background:var(--surface); width:100%; max-width:520px; border-radius:18px 18px 0 0; padding:20px 18px calc(20px + env(safe-area-inset-bottom)); max-height:88vh; overflow-y:auto}
+  .modal-h{font-family:var(--f-title); font-size:24px; font-weight:400; margin-bottom:14px}
+  .modal-tabs{display:flex; gap:4px; background:var(--line); padding:3px; border-radius:99px; margin-bottom:16px}
+  .mtab{flex:1; font-size:13.5px; font-weight:600; padding:8px; border-radius:99px; border:none; background:transparent; color:var(--ink-2); cursor:pointer}
+  .mtab.on{background:var(--surface); color:var(--ink)}
+  .bulk-area{width:100%; min-height:120px; border:1px solid var(--line-strong); border-radius:9px; padding:11px 12px; font-size:16px; background:var(--bg); color:var(--ink); font-family:inherit; resize:vertical}
+  .bulk-hint{font-size:12.5px; color:var(--ink-2); margin-top:8px; line-height:1.4}
+  .fld{display:block; margin-bottom:12px}
+  .fld span{display:block; font-size:12px; font-weight:600; color:var(--ink-2); margin-bottom:5px}
+  .fld input, .fld select{width:100%; border:1px solid var(--line-strong); border-radius:9px; padding:11px 12px; font-size:16px; background:var(--bg); color:var(--ink); font-family:inherit}
+  .fld-row{display:flex; align-items:center; gap:9px; margin-bottom:10px; font-size:14.5px; color:var(--ink)}
+  .fld-row input{width:19px; height:19px}
+  .modal-btns{display:flex; gap:10px; margin-top:8px}
+  .btn-cancel{flex:1; padding:12px; border-radius:10px; border:1px solid var(--line-strong); background:transparent; color:var(--ink-2); font-size:15px; font-weight:600; cursor:pointer}
+  .btn-save{flex:2; padding:12px; border-radius:10px; border:none; background:var(--ink); color:var(--bg); font-size:15px; font-weight:650; cursor:pointer}
+  .prio-tag{
+    font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    background:var(--prio); color:var(--prio-ink); padding:3px 7px; border-radius:6px;
+  }
+  .visit-btn{
+    flex:0 0 auto; width:30px; height:30px; border-radius:9px; border:1.5px solid var(--line-strong);
+    background:transparent; cursor:pointer; display:grid; place-items:center; font-size:16px; color:transparent;
+  }
+  .visit-btn.on{background:var(--done); border-color:var(--done); color:#fff}
+
+  .status-row{display:flex; gap:7px; margin-top:11px}
+  .st{
+    flex:1; font-size:12.5px; font-weight:600; padding:8px 4px; border-radius:9px;
+    border:1px solid var(--line-strong); background:transparent; color:var(--ink-2);
+    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px;
+  }
+  .st .dot{width:7px; height:7px; border-radius:99px; background:var(--ink-3)}
+  .st.on.contact{background:var(--contact-bg); border-color:var(--contact); color:var(--contact)}
+  .st.on.contact .dot{background:var(--contact)}
+  .st.on.follow{background:var(--follow-bg); border-color:var(--follow); color:var(--follow)}
+  .st.on.follow .dot{background:var(--follow)}
+
+  .note-toggle{
+    margin-top:9px; font-size:12.5px; color:var(--ink-2); cursor:pointer;
+    display:inline-flex; align-items:center; gap:5px; font-weight:550;
+  }
+  .note{
+    width:100%; margin-top:8px; border:1px solid var(--line-strong); border-radius:9px;
+    background:var(--bg); color:var(--ink); font-size:14px; padding:9px 10px; resize:vertical;
+    min-height:46px; font-family:inherit; display:none;
+  }
+  .note.show{display:block}
+
+  footer{
+    position:fixed; bottom:0; left:0; right:0; z-index:10;
+    background:var(--surface); border-top:1px solid var(--line);
+    padding:11px 16px calc(11px + env(safe-area-inset-bottom));
+    display:flex; gap:18px; justify-content:space-around; align-items:center;
+  }
+  .stat{text-align:center; line-height:1.15}
+  .stat b{display:block; font-size:19px; font-weight:680}
+  .stat span{font-size:10.5px; color:var(--ink-2); text-transform:uppercase; letter-spacing:.05em}
+  .stat.c b{color:var(--contact)} .stat.f b{color:var(--follow)} .stat.d b{color:var(--done)}
+  .reset{margin:24px auto 8px; display:block; background:none; border:none; color:var(--ink-3); font-size:12.5px; text-decoration:underline; cursor:pointer}
+  .empty{text-align:center; color:var(--ink-3); font-size:14px; padding:40px 20px}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Naturaltech · 10–13 jun · Anhembi <span class="sync-dot" id="sync-dot" title="Sincronização"></span><span class="sync-txt" id="sync-txt"></span></div>
+  <h1>Prospecção presencial</h1>
+  <div class="sub">Toque no quadrado para marcar visita. Os dados sincronizam entre os aparelhos.</div>
+  <div class="user-row">
+    <span class="lbl">Marcando como</span>
+    <div class="user-seg" id="user-seg">
+      <button data-u="Julia">Julia</button>
+      <button data-u="Gustavo">Gustavo</button>
+    </div>
+  </div>
+  <div class="progress"><i id="bar"></i></div>
+  <div class="progress-label"><span id="bar-txt">0 visitados</span><span id="bar-pct">0%</span></div>
+</header>
+
+<div class="filters" id="filters">
+  <button class="chip on" data-f="all">Todos <span class="chip-count" data-c="all">0</span></button>
+  <button class="chip" data-f="prio">★ Prioridades <span class="chip-count" data-c="prio">0</span></button>
+  <button class="chip" data-f="mine">Minhas visitas <span class="chip-count" data-c="mine">0</span></button>
+  <button class="chip" data-f="pending">A visitar <span class="chip-count" data-c="pending">0</span></button>
+  <button class="chip" data-f="follow">Follow-up <span class="chip-count" data-c="follow">0</span></button>
+  <button class="chip" data-f="contact">Contato coletado <span class="chip-count" data-c="contact">0</span></button>
+  <button class="chip" data-f="client">Clientes <span class="chip-count" data-c="client">0</span></button>
+</div>
+
+<div class="action-bar">
+  <button class="add-client" id="add-client">+ Adicionar marcas</button>
+  <button class="meet-tab" id="meet-tab" data-f="meet"><i class="ti ti-calendar"></i> Reuniões <span class="meet-count" id="meet-count">0</span></button>
+  <button class="won-tab" id="won-tab" data-f="won"><i class="ti ti-circle-check"></i> Fechados <span class="won-count" id="won-count">0</span></button>
+  <button class="lost-tab" id="lost-tab" data-f="lost"><i class="ti ti-circle-x"></i> Perdidos <span class="lost-count" id="lost-count">0</span></button>
+</div>
+
+<main id="list"></main>
+<button class="reset" id="reset">Limpar status deste usuário</button>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-h">Adicionar marcas</div>
+    <div class="modal-tabs">
+      <button class="mtab on" data-t="single">Uma por uma</button>
+      <button class="mtab" data-t="bulk">Várias de uma vez</button>
+    </div>
+
+    <div class="mpane" id="pane-single">
+      <label class="fld"><span>Nome *</span><input id="f-name" placeholder="Nome da marca"></label>
+      <label class="fld"><span>Localização</span><input id="f-loc" placeholder="Ex: Rua C 18"></label>
+      <label class="fld"><span>Porte</span><input id="f-size" placeholder="Ex: Indie / emergente"></label>
+      <label class="fld"><span>Bloco</span>
+        <select id="f-block">
+          <option>Bloco 1 · ruas 1 a 7</option>
+          <option>Bloco 2 · ruas 8 a 12</option>
+          <option>Bloco 3 · ruas 15 a 19</option>
+          <option selected>Sem bloco definido</option>
+        </select>
+      </label>
+      <label class="fld-row"><input type="checkbox" id="f-client"><span>Já é cliente</span></label>
+      <label class="fld-row"><input type="checkbox" id="f-prio"><span>Marcar como prioridade</span></label>
+    </div>
+
+    <div class="mpane" id="pane-bulk" style="display:none">
+      <label class="fld"><span>Cole os nomes separados por vírgula</span>
+        <textarea id="f-bulk" class="bulk-area" placeholder="Ex: Marca A, Marca B, Marca C"></textarea>
+      </label>
+      <div class="bulk-hint">Cria um card para cada nome. Você define cliente, prioridade e o resto depois, em cada card.</div>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" id="m-cancel">Cancelar</button>
+      <button class="btn-save" id="m-save">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="stat d"><b id="s-done">0</b><span>Visitados</span></div>
+  <div class="stat c"><b id="s-contact">0</b><span>Contatos</span></div>
+  <div class="stat f"><b id="s-follow">0</b><span>Follow-up</span></div>
+  <div class="stat"><b id="s-total">0</b><span>Total</span></div>
+</footer>
+
+<script>
+const BLOCKS = ["Bloco 1 · ruas 1 a 7","Bloco 2 · ruas 8 a 12","Bloco 3 · ruas 15 a 19","Sem bloco definido"];
+const DATA = [
+  {id:"bendu", client:true, name:"Bendu", prio:true, block:"Bloco 3 · ruas 15 a 19", loc:"Rua G/H 15-16 (estande WeProtein)", size:"A confirmar"},
+  {id:"intelligent", name:"Intelligent Foods", prio:true, block:"Sem bloco definido", loc:null, size:"Foodtech / startup B2B"},
+  {id:"verdecampo", name:"Verde Campo", prio:true, block:"Sem bloco definido", loc:null, size:"Grande · R$423mi (2023), +200 func."},
+  {id:"apisvida", client:true, name:"Apis Vida", prio:true, block:"Sem bloco definido", loc:"10K (verificar no app)", size:"Grande · grupo, 2 fábricas, exporta"},
+  {id:"gutbrain", name:"Gut Brain", prio:true, block:"Sem bloco definido", loc:null, size:"A confirmar"},
+  {id:"enotecaria", name:"Enotecaria", prio:true, block:"Sem bloco definido", loc:null, size:"A confirmar"},
+  {id:"escapepen", name:"Escapepen NeuroJoy", prio:true, block:"Sem bloco definido", loc:null, size:"Pequena · startup (KF Comércio)"},
+
+  {id:"noa", name:"Noa Mocktails", block:"Bloco 1 · ruas 1 a 7", loc:"D1 · balcão 4", size:"Indie / emergente"},
+  {id:"zuzzi", name:"Zuzzi", block:"Bloco 1 · ruas 1 a 7", loc:"Rua C, entre 1 e 2", size:"A confirmar"},
+  {id:"heroica", client:true, name:"Heroica", block:"Bloco 1 · ruas 1 a 7", loc:"F/G 1 · Empreendedor Mais, balcão 44", size:"Indie / emergente"},
+  {id:"bhava", client:true, name:"Bhāva", block:"Bloco 1 · ruas 1 a 7", loc:"L 2/3", size:"A confirmar"},
+  {id:"supley", name:"Supley", block:"Bloco 1 · ruas 1 a 7", loc:"I 3", size:"A confirmar"},
+  {id:"maispura", name:"Mais Pura", block:"Bloco 1 · ruas 1 a 7", loc:"G/H 4-5", size:"A confirmar"},
+  {id:"groovi", name:"Groovi", block:"Bloco 1 · ruas 1 a 7", loc:"E 5 · Projeto Raízes, balcão 4", size:"Indie / emergente"},
+  {id:"holyfoods", name:"Holyfoods", block:"Bloco 1 · ruas 1 a 7", loc:"F/G 5", size:"A confirmar"},
+  {id:"irreal", name:"Irreal Snacks + Snacks do Johnny", block:"Bloco 1 · ruas 1 a 7", loc:"F/G 6", size:"A confirmar"},
+  {id:"pronutrition", name:"Pronutrition", block:"Bloco 1 · ruas 1 a 7", loc:"K 6", size:"A confirmar"},
+  {id:"tetrapak", name:"Tetra Pak", block:"Bloco 1 · ruas 1 a 7", loc:"C 6/7", size:"Multinacional · embalagens"},
+  {id:"viciozero", client:true, name:"Vício Zero", block:"Bloco 1 · ruas 1 a 7", loc:"C 7", size:"A confirmar"},
+
+  {id:"tao", name:"TAO", block:"Bloco 2 · ruas 8 a 12", loc:"D 8", size:"A confirmar"},
+  {id:"organique", name:"Organique / Aura Fit", block:"Bloco 2 · ruas 8 a 12", loc:"C 9/10", size:"A confirmar"},
+  {id:"alva", name:"Alva Personal Care", block:"Bloco 2 · ruas 8 a 12", loc:"A 12", size:"A confirmar"},
+  {id:"cacow", client:true, name:"Cacow", block:"Bloco 2 · ruas 8 a 12", loc:"K 12", size:"A confirmar"},
+
+  {id:"saucy", name:"Saucy", block:"Bloco 3 · ruas 15 a 19", loc:"C/D 15-16", size:"A confirmar"},
+  {id:"luci", name:"Luci", block:"Bloco 3 · ruas 15 a 19", loc:"D 15 · esquina Empreendedor Mais", size:"Indie / emergente"},
+  {id:"weprotein", name:"WeProtein + Bendu", block:"Bloco 3 · ruas 15 a 19", loc:"G/H 15-16", size:"A confirmar"},
+  {id:"kote", name:"Kote Skincare", block:"Bloco 3 · ruas 15 a 19", loc:"C 18", size:"A confirmar"},
+  {id:"ruca", name:"Rucá Brasil", block:"Bloco 3 · ruas 15 a 19", loc:"C 18", size:"A confirmar"},
+  {id:"maxfem", client:true, name:"Maxfem", block:"Bloco 3 · ruas 15 a 19", loc:"A 17", size:"A confirmar"},
+  {id:"mahta", name:"Mahta", block:"Bloco 3 · ruas 15 a 19", loc:"H 17", size:"A confirmar"},
+  {id:"bewo", name:"Bewo", block:"Bloco 3 · ruas 15 a 19", loc:"A 19 · Indie Brands", size:"Indie / emergente"},
+  {id:"bananamilk", client:true, name:"Banana Milk", block:"Bloco 3 · ruas 15 a 19", loc:"F 16", size:"A confirmar"},
+  {id:"flow", client:true, clientNote:"Cliente: Drink Ponto", name:"Flow (Up&Gas, Drink Ponto, Hydy)", block:"Bloco 3 · ruas 15 a 19", loc:"F 18", size:"A confirmar"},
+  {id:"mushin", name:"Mushin", block:"Bloco 3 · ruas 15 a 19", loc:"E 18", size:"A confirmar"},
+  {id:"devi", name:"Dêvi", block:"Bloco 3 · ruas 15 a 19", loc:"G 16", size:"A confirmar"},
+  {id:"granosquare", name:"Granosquare", block:"Bloco 3 · ruas 15 a 19", loc:"G/H 18-19", size:"A confirmar"},
+  {id:"cells", name:"Cells", block:"Bloco 3 · ruas 15 a 19", loc:"G/H 19", size:"A confirmar"},
+  {id:"pinc", client:true, name:"Pinc", block:"Bloco 3 · ruas 15 a 19", loc:"J 16", size:"A confirmar"},
+];
+
+/* ============================================================
+   CONFIGURAÇÃO DO SUPABASE
+   Cole aqui as duas chaves do seu projeto Supabase.
+   Enquanto estiverem em branco, o app funciona só local (sem sincronizar).
+   ============================================================ */
+const SUPABASE_URL = "https://maqdyqnrjevuhrfsnwnd.supabase.co";   // ex: https://xxxxx.supabase.co
+const SUPABASE_KEY = "";   // cole aqui a chave publishable (sb_publishable_...)
+const ROW_ID = "shared";   // todos compartilham a mesma linha
+/* ============================================================ */
+
+const KEY = "naturaltech_prospec_v4";
+let store = {};
+try { store = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){ store = {}; }
+
+function normalizeStore(){
+  store.users = store.users || {};
+  store.users.Julia = store.users.Julia || {};
+  store.users.Gustavo = store.users.Gustavo || {};
+  store.prio = store.prio || {};
+  store.assign = store.assign || {};
+  store.deal = store.deal || {};
+  store.custom = store.custom || [];
+}
+normalizeStore();
+
+let user = store.__user || "Julia";
+let state = store.users[user];
+
+// ---- Camada de sincronização (Supabase) ----
+const sbEnabled = !!(SUPABASE_URL && SUPABASE_KEY && window.supabase);
+let sb = null, applyingRemote = false, saveTimer = null;
+function setSync(cls, txt){
+  const dot = document.getElementById("sync-dot"); const t = document.getElementById("sync-txt");
+  if(dot) dot.className = "sync-dot " + cls;
+  if(t) t.textContent = txt || "";
+}
+
+function save(){
+  store.__user = user;
+  try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e){}
+  if(applyingRemote) return;            // não reenvia o que acabou de chegar do outro aparelho
+  if(sbEnabled){
+    setSync("sync","salvando");
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(pushRemote, 400);   // debounce
+  }
+}
+
+async function pushRemote(){
+  if(!sb) return;
+  const payload = JSON.parse(JSON.stringify(store));
+  delete payload.__user;   // a pessoa selecionada é local de cada aparelho
+  const { error } = await sb.from("prospec").upsert({ id: ROW_ID, data: payload, updated_at: new Date().toISOString() });
+  setSync(error ? "err" : "ok", error ? "erro ao salvar" : "sincronizado");
+}
+
+function mergeRemote(remote){
+  if(!remote) return;
+  const localUser = store.__user;
+  store = remote;
+  store.__user = localUser;
+  normalizeStore();
+  user = store.__user || user || "Julia";
+  state = store.users[user];
+}
+
+async function initSync(){
+  if(!sbEnabled){ setSync("off","modo local"); return; }
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  setSync("sync","conectando");
+  try {
+    const { data, error } = await sb.from("prospec").select("data").eq("id", ROW_ID).maybeSingle();
+    if(error) throw error;
+    if(data && data.data){ applyingRemote = true; mergeRemote(data.data); applyingRemote = false; syncUser(); render(); }
+    else { await pushRemote(); }   // primeira vez: cria a linha
+    setSync("ok","sincronizado");
+  } catch(e){ setSync("err","sem conexão"); }
+
+  // Realtime: quando o outro aparelho salvar, atualiza a tela
+  sb.channel("prospec-"+ROW_ID)
+    .on("postgres_changes", { event:"*", schema:"public", table:"prospec", filter:"id=eq."+ROW_ID }, payload => {
+      const remote = payload.new && payload.new.data;
+      if(remote){ applyingRemote = true; mergeRemote(remote); applyingRemote = false; syncUser(); render(); setSync("ok","atualizado"); }
+    })
+    .subscribe();
+}
+
+function st(id){ return state[id] || (state[id] = {visited:false, contact:false, follow:false, note:""}); }
+function isPrio(it){ return (it.id in store.prio) ? store.prio[it.id] : !!it.prio; }
+function assignOf(id){ return store.assign[id] || null; }
+function deal(id){ return store.deal[id] || (store.deal[id] = {value:"", lost:false, lostReason:"", won:false, wonValue:"", meeting:""}); }
+
+let filter = "all";
+function items(){ return DATA.concat(store.custom); }
+
+function nameOf(id){ const it = items().find(x=>x.id===id); return it ? it.name : id; }
+function meetingConflict(selfId, dt){
+  for(const it of items()){
+    if(it.id===selfId) continue;
+    if(store.deal[it.id] && store.deal[it.id].meeting === dt) return it.name;
+  }
+  return null;
+}
+function meetingsList(){
+  return items()
+    .filter(it => { const D = store.deal[it.id]; return D && D.meeting; })
+    .sort((a,b) => store.deal[a.id].meeting.localeCompare(store.deal[b.id].meeting));
+}
+function fmtDateTime(dt){
+  if(!dt) return "";
+  const [d,t] = dt.split("T");
+  const [y,m,day] = d.split("-");
+  return day+"/"+m+" às "+t;
+}
+
+
+function matches(it){
+  const s = st(it.id);
+  const D = deal(it.id);
+  if(filter==="lost") return D.lost;          // só perdidos
+  if(filter==="won") return D.won;            // só fechados
+  if(D.lost || D.won) return false;            // perdidos e fechados somem das demais visões
+  if(filter==="all") return true;
+  if(filter==="prio") return isPrio(it);
+  if(filter==="pending") return !s.visited;
+  if(filter==="follow") return s.follow;
+  if(filter==="contact") return s.contact;
+  if(filter==="mine") return assignOf(it.id)===user;
+  if(filter==="client") return !!it.client;
+  return true;
+}
+
+function render(){
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  let shown = 0;
+
+  if(filter==="meet"){
+    const ms = meetingsList();
+    if(ms.length){
+      const h=document.createElement("div");
+      h.className="group-h"; h.textContent="Agenda de reuniões";
+      list.appendChild(h);
+      ms.forEach(it => { list.appendChild(meetingCard(it)); shown++; });
+    }
+  } else if(filter==="lost" || filter==="won"){
+    const rows = items().filter(matches);
+    if(rows.length){
+      const h=document.createElement("div");
+      h.className="group-h"; h.textContent= filter==="lost" ? "Negócios perdidos" : "Negócios fechados";
+      list.appendChild(h);
+      rows.forEach(it=>{ list.appendChild(card(it)); shown++; });
+    }
+  } else {
+    const prio = items().filter(it => isPrio(it) && matches(it));
+    if(prio.length){
+      const h = document.createElement("div");
+      h.className="group-h"; h.innerHTML='<span class="star">★</span> Prioridades';
+      list.appendChild(h);
+      prio.forEach(it => { list.appendChild(card(it)); shown++; });
+    }
+    BLOCKS.forEach(bl => {
+      const vis = items().filter(it => !isPrio(it) && it.block===bl && matches(it));
+      if(!vis.length) return;
+      const h = document.createElement("div");
+      h.className="group-h"; h.textContent=bl;
+      list.appendChild(h);
+      vis.forEach(it => { list.appendChild(card(it)); shown++; });
+    });
+  }
+
+  if(!shown){
+    const e = document.createElement("div");
+    e.className="empty";
+    e.textContent = filter==="lost" ? "Nenhum negócio perdido." : filter==="won" ? "Nenhum negócio fechado." : filter==="meet" ? "Nenhuma reunião agendada. Marque uma no follow-up de qualquer marca." : "Nada neste filtro.";
+    list.appendChild(e);
+  }
+  updateStats();
+}
+
+function card(it){
+  const s = st(it.id);
+  const d = deal(it.id);
+  const prio = isPrio(it);
+  const c = document.createElement("div");
+  c.className = "card" + (s.visited ? " is-done":"") + (prio?" is-prio":"") + (d.lost?" is-lost":"") + (d.won?" is-won":"");
+
+  const top = document.createElement("div"); top.className="card-top";
+  const nw = document.createElement("div"); nw.className="name-wrap";
+  const nm = document.createElement("div"); nm.className="name";
+  nm.innerHTML = (prio?'<span class="star">★</span>':'') + it.name
+    + (it.client?' <span class="client-tag">Cliente</span>':'');
+  const lc = document.createElement("div");
+  lc.className = "loc" + (it.loc?"":" unknown");
+  lc.textContent = it.loc || "Localização a confirmar no balcão / app";
+  if(it.clientNote){
+    const cn=document.createElement("div"); cn.className="client-note"; cn.textContent=it.clientNote; nw.appendChild(nm); nw.appendChild(cn);
+  } else { nw.appendChild(nm); }
+  const sz = document.createElement("div");
+  sz.className = "size"; sz.innerHTML = '<span>Porte</span> ' + (it.size || "A confirmar");
+  nw.appendChild(lc); nw.appendChild(sz);
+
+  const vb = document.createElement("button");
+  vb.className = "visit-btn" + (s.visited?" on":"");
+  vb.innerHTML = "✓"; vb.setAttribute("aria-label","Marcar visitado");
+  vb.onclick = () => { s.visited = !s.visited; save(); render(); };
+
+  top.appendChild(nw);
+  if(it.custom){
+    const tb = document.createElement("button");
+    tb.className="trash-btn"; tb.innerHTML="<i class='ti ti-trash'></i>";
+    tb.setAttribute("aria-label","Excluir card");
+    tb.onclick = () => {
+      if(tb.dataset.armed==="1"){
+        store.custom = store.custom.filter(x => x.id !== it.id);
+        delete store.deal[it.id]; delete store.assign[it.id]; delete store.prio[it.id];
+        delete store.users.Julia[it.id]; delete store.users.Gustavo[it.id];
+        save(); render();
+      } else {
+        tb.dataset.armed="1"; tb.classList.add("armed"); tb.innerHTML="<i class='ti ti-trash'></i> Excluir?";
+        setTimeout(()=>{ if(tb){ tb.dataset.armed="0"; tb.classList.remove("armed"); tb.innerHTML="<i class='ti ti-trash'></i>"; } }, 3000);
+      }
+    };
+    top.appendChild(tb);
+  }
+  top.appendChild(vb);
+  c.appendChild(top);
+
+  // Se fechado: mostra valor + reabrir, e nada mais
+  if(d.won){
+    const wb = document.createElement("div"); wb.className="won-box";
+    wb.innerHTML = '<div class="won-h"><span>Negócio fechado</span></div>';
+    const wl = document.createElement("label"); wl.className="won-val-lbl"; wl.textContent="Valor fechado";
+    const wi = document.createElement("input");
+    wi.className="won-value"; wi.inputMode="decimal"; wi.placeholder="R$ 0,00";
+    wi.value = d.wonValue || "";
+    wi.oninput = () => { d.wonValue = wi.value; save(); };
+    wb.appendChild(wl); wb.appendChild(wi);
+    const rb = document.createElement("button");
+    rb.className="restore-btn"; rb.innerHTML="↩ Reabrir negócio";
+    rb.onclick = () => { d.won=false; save(); render(); };
+    wb.appendChild(rb);
+    c.appendChild(wb);
+    return c;
+  }
+
+  // Se perdido: mostra motivo + restaurar, e nada mais
+  if(d.lost){
+    const lb = document.createElement("div"); lb.className="lost-box";
+    lb.innerHTML = '<div class="lost-h"><span>Negócio perdido</span></div>';
+    const ri = document.createElement("input");
+    ri.className="lost-reason"; ri.placeholder="Motivo da perda...";
+    ri.value = d.lostReason || "";
+    ri.oninput = () => { d.lostReason = ri.value; save(); };
+    lb.appendChild(ri);
+    const rb = document.createElement("button");
+    rb.className="restore-btn"; rb.innerHTML="↩ Restaurar negócio";
+    rb.onclick = () => { d.lost=false; save(); render(); };
+    lb.appendChild(rb);
+    c.appendChild(lb);
+    return c;
+  }
+
+  // Linha de atribuição: quem visita
+  const ar = document.createElement("div"); ar.className="assign-row";
+  const al = document.createElement("span"); al.className="assign-lbl"; al.textContent="Visita:";
+  ar.appendChild(al);
+  ["Julia","Gustavo"].forEach(u => {
+    const b = document.createElement("button");
+    b.className = "assign-btn" + (assignOf(it.id)===u?" on":"");
+    b.textContent = u;
+    b.onclick = () => {
+      store.assign[it.id] = (assignOf(it.id)===u) ? null : u;
+      save(); render();
+    };
+    ar.appendChild(b);
+  });
+  const pb = document.createElement("button");
+  pb.className = "prio-btn" + (prio?" on":"");
+  pb.innerHTML = (prio?'★ Prioridade':'☆ Marcar prioridade');
+  pb.onclick = () => { store.prio[it.id] = !prio; save(); render(); };
+  ar.appendChild(pb);
+  c.appendChild(ar);
+
+  const sr = document.createElement("div"); sr.className="status-row";
+  sr.appendChild(stBtn(it,"contact","Contato"));
+  sr.appendChild(stBtn(it,"follow","Follow-up"));
+  c.appendChild(sr);
+
+  // Campos de follow-up: valor potencial + agendamento de reunião
+  if(s.follow){
+    const vw = document.createElement("div"); vw.className="value-row";
+    const vl = document.createElement("span"); vl.className="value-lbl"; vl.textContent="Valor potencial";
+    const vi = document.createElement("input");
+    vi.className="value-input"; vi.inputMode="decimal"; vi.placeholder="R$ 0,00";
+    vi.value = d.value || "";
+    vi.oninput = () => { d.value = vi.value; save(); };
+    vw.appendChild(vl); vw.appendChild(vi);
+    c.appendChild(vw);
+
+    const mw = document.createElement("div"); mw.className="meeting-row";
+    const ml = document.createElement("span"); ml.className="value-lbl"; ml.innerHTML='<i class="ti ti-calendar"></i> Reunião';
+    const mi = document.createElement("input");
+    mi.className="value-input"; mi.type="datetime-local";
+    mi.value = d.meeting || "";
+    const warn = document.createElement("div"); warn.className="meeting-warn";
+    mi.onchange = () => {
+      const v = mi.value;
+      if(v && meetingConflict(it.id, v)){
+        const other = meetingConflict(it.id, v);
+        warn.textContent = "Horário já ocupado por " + other + ". Escolha outro.";
+        warn.classList.add("show");
+        mi.value = d.meeting || "";   // reverte
+        return;
+      }
+      warn.classList.remove("show");
+      d.meeting = v; save();
+    };
+    mw.appendChild(ml); mw.appendChild(mi);
+    c.appendChild(mw); c.appendChild(warn);
+  }
+
+  const nt = document.createElement("div"); nt.className="note-toggle";
+  nt.innerHTML = (s.note? "✎ Nota":"+ Nota");
+  const ta = document.createElement("textarea");
+  ta.className = "note" + (s.note?" show":"");
+  ta.placeholder = "Quem atendeu, próximo passo, observação...";
+  ta.value = s.note || "";
+  ta.oninput = () => { s.note = ta.value; save(); };
+  nt.onclick = () => { ta.classList.toggle("show"); if(ta.classList.contains("show")) ta.focus(); };
+  c.appendChild(nt); c.appendChild(ta);
+
+  // Botão de fechar negócio (confirmação inline com valor)
+  const wonWrap = document.createElement("div"); wonWrap.className="won-confirm-wrap";
+  const wonBtn = document.createElement("button");
+  wonBtn.className="mark-won"; wonBtn.innerHTML="<i class='ti ti-circle-check'></i> Fechar negócio";
+  const wonConfirm = document.createElement("div"); wonConfirm.className="won-confirm";
+  wonConfirm.innerHTML = '<div class="wc-h">Marcar como fechado. Qual o valor do negócio?</div>';
+  const wvi = document.createElement("input");
+  wvi.className="won-value"; wvi.inputMode="decimal"; wvi.placeholder="R$ 0,00 (opcional)";
+  if(d.value) wvi.value = d.value;   // herda o valor potencial se já tiver
+  wonConfirm.appendChild(wvi);
+  const wRow = document.createElement("div"); wRow.className="lc-btns";
+  const wCancel = document.createElement("button"); wCancel.className="lc-cancel"; wCancel.textContent="Cancelar";
+  const wConf = document.createElement("button"); wConf.className="wc-confirm"; wConf.textContent="Confirmar fechamento";
+  wRow.appendChild(wCancel); wRow.appendChild(wConf);
+  wonConfirm.appendChild(wRow);
+  wonBtn.onclick = () => { wonBtn.style.display="none"; wonConfirm.classList.add("show"); wvi.focus(); };
+  wCancel.onclick = () => { wonConfirm.classList.remove("show"); wonBtn.style.display="block"; };
+  wConf.onclick = () => { d.won=true; d.wonValue=wvi.value.trim(); save(); render(); };
+  wonWrap.appendChild(wonBtn); wonWrap.appendChild(wonConfirm);
+  c.appendChild(wonWrap);
+
+  // Botão de negativa imediata (revela confirmação inline, sem prompt)
+  const lostWrap = document.createElement("div"); lostWrap.className="lost-confirm-wrap";
+  const lostBtn = document.createElement("button");
+  lostBtn.className="mark-lost"; lostBtn.innerHTML="✕ Negativa imediata";
+  const confirmBox = document.createElement("div"); confirmBox.className="lost-confirm";
+  confirmBox.innerHTML = '<div class="lc-h">Marcar como negativa. Por que o negócio foi perdido?</div>';
+  const ri = document.createElement("input");
+  ri.className="lost-reason"; ri.placeholder="Motivo (ex: já tem fornecedor, sem fit, preço...)";
+  confirmBox.appendChild(ri);
+  const btnRow = document.createElement("div"); btnRow.className="lc-btns";
+  const cancel = document.createElement("button"); cancel.className="lc-cancel"; cancel.textContent="Cancelar";
+  const conf = document.createElement("button"); conf.className="lc-confirm"; conf.textContent="Confirmar perda";
+  btnRow.appendChild(cancel); btnRow.appendChild(conf);
+  confirmBox.appendChild(btnRow);
+
+  lostBtn.onclick = () => { lostBtn.style.display="none"; confirmBox.classList.add("show"); ri.focus(); };
+  cancel.onclick = () => { confirmBox.classList.remove("show"); lostBtn.style.display="block"; ri.value=""; };
+  conf.onclick = () => {
+    d.lost = true;
+    d.lostReason = ri.value.trim();
+    save(); render();
+  };
+  lostWrap.appendChild(lostBtn); lostWrap.appendChild(confirmBox);
+  c.appendChild(lostWrap);
+
+  return c;
+}
+
+function stBtn(it, key, label){
+  const s = st(it.id);
+  const b = document.createElement("button");
+  b.className = "st " + key + (s[key]?" on":"");
+  b.innerHTML = '<span class="dot"></span>' + label;
+  b.onclick = () => { s[key] = !s[key]; save(); render(); };
+  return b;
+}
+
+function meetingCard(it){
+  const d = deal(it.id);
+  const who = assignOf(it.id);
+  const c = document.createElement("div");
+  c.className = "meet-card";
+  const time = document.createElement("div"); time.className="meet-time";
+  const [datePart, timePart] = d.meeting.split("T");
+  const [yy,mm,dd] = datePart.split("-");
+  time.innerHTML = '<div class="meet-hour">'+timePart+'</div><div class="meet-day">'+dd+'/'+mm+'</div>';
+  const info = document.createElement("div"); info.className="meet-info";
+  let meta = it.loc ? it.loc : "Local a confirmar";
+  if(who) meta += " · " + who;
+  if(d.value) meta += " · " + d.value;
+  info.innerHTML = '<div class="meet-name">'+it.name+'</div><div class="meet-meta">'+meta+'</div>';
+  const clear = document.createElement("button");
+  clear.className="meet-clear"; clear.innerHTML='<i class="ti ti-x"></i>';
+  clear.setAttribute("aria-label","Cancelar reunião");
+  clear.onclick = () => { d.meeting=""; save(); render(); };
+  c.appendChild(time); c.appendChild(info); c.appendChild(clear);
+  return c;
+}
+
+function countFor(fv){
+  return items().filter(it => {
+    const s = st(it.id);
+    const D = deal(it.id);
+    if(fv==="lost") return D.lost;
+    if(fv==="won") return D.won;
+    if(D.lost || D.won) return false;   // perdidos e fechados não contam nas demais abas
+    if(fv==="all") return true;
+    if(fv==="prio") return isPrio(it);
+    if(fv==="pending") return !s.visited;
+    if(fv==="follow") return s.follow;
+    if(fv==="contact") return s.contact;
+    if(fv==="mine") return assignOf(it.id)===user;
+    if(fv==="client") return !!it.client;
+    return false;
+  }).length;
+}
+
+function updateStats(){
+  let d=0,c=0,f=0,lost=0,won=0;
+  items().forEach(it=>{ const s=st(it.id); const D=deal(it.id); if(s.visited)d++; if(s.contact)c++; if(s.follow)f++; if(D.lost)lost++; if(D.won)won++; });
+  document.getElementById("s-done").textContent=d;
+  document.getElementById("s-contact").textContent=c;
+  document.getElementById("s-follow").textContent=f;
+  document.getElementById("s-total").textContent=items().length;
+  const pct = Math.round(d/items().length*100);
+  document.getElementById("bar").style.width = pct+"%";
+  document.getElementById("bar-txt").textContent = d+" de "+items().length+" visitados";
+  document.getElementById("bar-pct").textContent = pct+"%";
+  document.getElementById("lost-count").textContent = lost;
+  document.getElementById("won-count").textContent = won;
+  document.getElementById("meet-count").textContent = meetingsList().length;
+  document.querySelectorAll(".chip-count[data-c]").forEach(el => {
+    el.textContent = countFor(el.dataset.c);
+  });
+}
+
+function clearActionTabs(){
+  ["lost-tab","won-tab","meet-tab"].forEach(id => document.getElementById(id).classList.remove("on"));
+}
+
+document.getElementById("filters").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if(!b) return;
+  filter = b.dataset.f;
+  document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on", x===b));
+  clearActionTabs();
+  render();
+});
+
+function actionTab(id, f){
+  document.getElementById(id).addEventListener("click", () => {
+    filter = f;
+    document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));
+    clearActionTabs();
+    document.getElementById(id).classList.add("on");
+    render();
+  });
+}
+actionTab("lost-tab","lost");
+actionTab("won-tab","won");
+actionTab("meet-tab","meet");
+
+document.getElementById("user-seg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  user = b.dataset.u;
+  state = store.users[user];
+  save();
+  syncUser();
+  render();
+});
+function syncUser(){
+  document.querySelectorAll("#user-seg button").forEach(x => x.classList.toggle("on", x.dataset.u===user));
+}
+
+document.getElementById("reset").onclick = () => {
+  if(confirm("Limpar os status, contatos e notas de "+user+"?")){ store.users[user]={}; state=store.users[user]; save(); render(); }
+};
+
+// Modal de adicionar marcas
+const modalBg = document.getElementById("modal-bg");
+let modalTab = "single";
+function setTab(t){
+  modalTab = t;
+  document.querySelectorAll(".mtab").forEach(x=>x.classList.toggle("on", x.dataset.t===t));
+  document.getElementById("pane-single").style.display = (t==="single")?"block":"none";
+  document.getElementById("pane-bulk").style.display = (t==="bulk")?"block":"none";
+}
+function openModal(){
+  document.getElementById("f-name").value="";
+  document.getElementById("f-loc").value="";
+  document.getElementById("f-size").value="";
+  document.getElementById("f-block").value="Sem bloco definido";
+  document.getElementById("f-client").checked=false;
+  document.getElementById("f-prio").checked=false;
+  document.getElementById("f-bulk").value="";
+  setTab("single");
+  modalBg.classList.add("show");
+  setTimeout(()=>document.getElementById("f-name").focus(),50);
+}
+function closeModal(){ modalBg.classList.remove("show"); }
+document.getElementById("add-client").onclick = openModal;
+document.getElementById("m-cancel").onclick = closeModal;
+modalBg.onclick = e => { if(e.target===modalBg) closeModal(); };
+document.querySelectorAll(".mtab").forEach(b => b.onclick = () => setTab(b.dataset.t));
+
+document.getElementById("m-save").onclick = () => {
+  if(modalTab==="bulk"){
+    const raw = document.getElementById("f-bulk").value;
+    const names = raw.split(/[,\n]/).map(n=>n.trim()).filter(Boolean);
+    if(!names.length){ document.getElementById("f-bulk").focus(); return; }
+    names.forEach((name,i) => {
+      store.custom.push({
+        id: "custom_" + Date.now() + "_" + i,
+        name, loc:null, size:"A confirmar",
+        block:"Sem bloco definido",
+        client:false, prio:false, custom:true
+      });
+    });
+    save(); closeModal(); render();
+    return;
+  }
+  const name = document.getElementById("f-name").value.trim();
+  if(!name){ document.getElementById("f-name").focus(); return; }
+  store.custom.push({
+    id: "custom_" + Date.now(),
+    name,
+    loc: document.getElementById("f-loc").value.trim() || null,
+    size: document.getElementById("f-size").value.trim() || "A confirmar",
+    block: document.getElementById("f-block").value,
+    client: document.getElementById("f-client").checked,
+    prio: document.getElementById("f-prio").checked,
+    custom: true
+  });
+  save(); closeModal(); render();
+};
+
+syncUser();
+render();
+initSync();
+</script>
+</body>
+</html>
