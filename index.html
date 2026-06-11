@@ -48,9 +48,13 @@
     font-size:16px; line-height:1.4; padding-bottom:96px;
   }
   header{
+    background:var(--bg);
+    padding:16px 18px 10px;
+  }
+  .progress-bar-sticky{
     position:sticky; top:0; z-index:10;
     background:var(--bg); border-bottom:1px solid var(--line);
-    padding:16px 18px 12px;
+    padding:10px 18px 10px;
   }
   .eyebrow{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); font-weight:600}
   .sync-dot{display:inline-block; width:7px; height:7px; border-radius:99px; background:var(--ink-3); margin-left:6px; vertical-align:middle}
@@ -58,7 +62,7 @@
   .sync-txt{font-size:10px; letter-spacing:.04em; color:var(--ink-3); margin-left:4px; text-transform:none}
   h1{font-family:var(--f-title); font-size:32px; font-weight:400; margin:2px 0 2px; letter-spacing:0; line-height:1.05}
   .sub{font-size:13px; color:var(--ink-2)}
-  .progress{margin-top:12px; height:6px; border-radius:99px; background:var(--line); overflow:hidden}
+  .progress{margin-top:0; height:6px; border-radius:99px; background:var(--line); overflow:hidden}
   .progress > i{display:block; height:100%; width:0; background:var(--done); border-radius:99px; transition:width .35s ease}
   .progress-label{font-size:11.5px; color:var(--ink-2); margin-top:6px; display:flex; justify-content:space-between}
 
@@ -123,7 +127,14 @@
   .contact-field{display:flex; align-items:center; gap:9px; margin-bottom:7px}
   .contact-field:last-child{margin-bottom:0}
   .contact-lbl{flex:0 0 70px; font-size:12px; font-weight:600; color:var(--contact)}
-  .contact-input{flex:1; min-width:0; border:1px solid var(--line-strong); border-radius:8px; padding:8px 10px; font-size:15px; background:var(--surface); color:var(--ink); font-family:inherit}  .value-lbl{font-size:11.5px; font-weight:650; color:var(--follow); text-transform:uppercase; letter-spacing:.04em; white-space:nowrap}
+  .contact-input{flex:1; min-width:0; border:1px solid var(--line-strong); border-radius:8px; padding:8px 10px; font-size:15px; background:var(--surface); color:var(--ink); font-family:inherit}
+  .contact-lbl .req{color:var(--follow); font-weight:700}
+  .contact-save{margin-top:10px; width:100%; padding:10px; border-radius:9px; border:none; font-size:14px; font-weight:650; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; background:var(--line); color:var(--ink-3)}
+  .contact-save.ready{background:var(--contact); color:#fff}
+  .contact-save.saved{background:var(--done-bg); color:var(--done); border:1px solid var(--done)}
+  .contact-save:disabled{cursor:not-allowed}
+  .contact-status{font-size:12px; margin-top:6px; min-height:1px; text-align:center}
+  .contact-status.warn{color:var(--follow); font-weight:550}  .value-lbl{font-size:11.5px; font-weight:650; color:var(--follow); text-transform:uppercase; letter-spacing:.04em; white-space:nowrap}
   .value-input{flex:1; border:1px solid var(--line-strong); border-radius:8px; padding:8px 10px; font-size:15px; background:var(--surface); color:var(--ink); font-family:inherit; min-width:0}
   .meeting-row{display:flex; align-items:center; gap:9px; margin-top:8px; background:var(--follow-bg); padding:9px 11px; border-radius:10px}
   .meeting-row .value-lbl{display:inline-flex; align-items:center; gap:4px}
@@ -252,9 +263,12 @@
   <div class="eyebrow">Naturaltech · 10–13 jun · Anhembi <span class="sync-dot" id="sync-dot" title="Sincronização"></span><span class="sync-txt" id="sync-txt"></span></div>
   <h1>Prospecção presencial</h1>
   <div class="sub">Toque no quadrado para marcar visita. Os dados sincronizam entre os aparelhos.</div>
+</header>
+
+<div class="progress-bar-sticky">
   <div class="progress"><i id="bar"></i></div>
   <div class="progress-label"><span id="bar-txt">0 visitados</span><span id="bar-pct">0%</span></div>
-</header>
+</div>
 
 <div class="search-wrap">
   <i class="ti ti-search search-icon"></i>
@@ -996,7 +1010,7 @@ async function initSync(){
 function st(id){ return state[id] || (state[id] = {visited:false, contact:false, follow:false, note:""}); }
 function isPrio(it){ return (it.id in store.prio) ? store.prio[it.id] : !!it.prio; }
 function assignOf(id){ return store.assign[id] || null; }
-function deal(id){ return store.deal[id] || (store.deal[id] = {value:"", lost:false, lostReason:"", won:false, wonValue:"", meeting:"", cName:"", cRole:"", cPhone:"", cEmail:""}); }
+function deal(id){ return store.deal[id] || (store.deal[id] = {value:"", lost:false, lostReason:"", won:false, wonValue:"", meeting:"", cName:"", cRole:"", cPhone:"", cEmail:"", cSaved:false}); }
 
 let filter = "all";
 let searchQuery = "";
@@ -1039,7 +1053,7 @@ function matches(it){
   if(filter==="prio") return isPrio(it);
   if(filter==="pending") return !s.visited;
   if(filter==="follow") return s.follow;
-  if(filter==="contact") return s.contact;
+  if(filter==="contact") return deal(it.id).cSaved;
   if(filter==="julia") return assignOf(it.id)==="Julia";
   if(filter==="gustavo") return assignOf(it.id)==="Gustavo";
   if(filter==="client") return !!it.client;
@@ -1226,22 +1240,50 @@ function card(it){
   if(s.contact){
     const cw = document.createElement("div"); cw.className="contact-box";
     cw.innerHTML = '<div class="contact-h"><i class="ti ti-user"></i> Dados do contato</div>';
-    const mkField = (key, label, ph, type) => {
+    const inputs = {};
+    const mkField = (key, label, ph, type, req) => {
       const row = document.createElement("div"); row.className="contact-field";
-      const lb = document.createElement("span"); lb.className="contact-lbl"; lb.textContent=label;
+      const lb = document.createElement("span"); lb.className="contact-lbl";
+      lb.innerHTML = label + (req?' <span class="req">*</span>':'');
       const inp = document.createElement("input");
       inp.className="contact-input"; inp.placeholder=ph;
       if(type) inp.type=type;
       if(type==="tel") inp.inputMode="tel";
       inp.value = d[key] || "";
-      inp.oninput = () => { d[key] = inp.value; save(); };
+      inputs[key] = inp;
+      inp.oninput = () => { d[key] = inp.value; if(d.cSaved){ d.cSaved=false; } save(); refreshSave(); };
       row.appendChild(lb); row.appendChild(inp);
       return row;
     };
-    cw.appendChild(mkField("cName","Nome","Nome da pessoa"));
+    cw.appendChild(mkField("cName","Nome","Nome da pessoa",null,true));
     cw.appendChild(mkField("cRole","Cargo","Ex: comprador, sócio, marketing"));
-    cw.appendChild(mkField("cPhone","WhatsApp","(11) 99999-9999","tel"));
+    cw.appendChild(mkField("cPhone","WhatsApp","(11) 99999-9999","tel",true));
     cw.appendChild(mkField("cEmail","Email","email@empresa.com","email"));
+
+    const saveBtn = document.createElement("button"); saveBtn.className="contact-save";
+    const status = document.createElement("div"); status.className="contact-status";
+    function valid(){ return (d.cName||"").trim() && (d.cPhone||"").trim(); }
+    function refreshSave(){
+      const ok = valid();
+      saveBtn.disabled = !ok;
+      saveBtn.classList.toggle("ready", ok);
+      if(d.cSaved){
+        saveBtn.innerHTML = "<i class='ti ti-check'></i> Contato salvo";
+        saveBtn.classList.add("saved");
+        status.textContent = ""; status.className="contact-status";
+      } else {
+        saveBtn.innerHTML = "Salvar contato";
+        saveBtn.classList.remove("saved");
+        status.textContent = ok ? "" : "Nome e WhatsApp são obrigatórios.";
+        status.className = "contact-status" + (ok?"":" warn");
+      }
+    }
+    saveBtn.onclick = () => {
+      if(!valid()) return;
+      d.cSaved = true; save(); render();
+    };
+    cw.appendChild(saveBtn); cw.appendChild(status);
+    refreshSave();
     c.appendChild(cw);
   }
 
@@ -1379,7 +1421,7 @@ function countFor(fv){
     if(fv==="prio") return isPrio(it);
     if(fv==="pending") return !s.visited;
     if(fv==="follow") return s.follow;
-    if(fv==="contact") return s.contact;
+    if(fv==="contact") return deal(it.id).cSaved;
     if(fv==="julia") return assignOf(it.id)==="Julia";
     if(fv==="gustavo") return assignOf(it.id)==="Gustavo";
     if(fv==="client") return !!it.client;
@@ -1390,7 +1432,7 @@ function countFor(fv){
 
 function updateStats(){
   let d=0,c=0,f=0,lost=0,won=0;
-  items().forEach(it=>{ const s=st(it.id); const D=deal(it.id); if(s.visited)d++; if(s.contact)c++; if(s.follow)f++; if(D.lost)lost++; if(D.won)won++; });
+  items().forEach(it=>{ const s=st(it.id); const D=deal(it.id); if(s.visited)d++; if(D.cSaved)c++; if(s.follow)f++; if(D.lost)lost++; if(D.won)won++; });
   document.getElementById("s-done").textContent=d;
   document.getElementById("s-contact").textContent=c;
   document.getElementById("s-follow").textContent=f;
