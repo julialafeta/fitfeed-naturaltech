@@ -58,19 +58,11 @@
   .sync-txt{font-size:10px; letter-spacing:.04em; color:var(--ink-3); margin-left:4px; text-transform:none}
   h1{font-family:var(--f-title); font-size:32px; font-weight:400; margin:2px 0 2px; letter-spacing:0; line-height:1.05}
   .sub{font-size:13px; color:var(--ink-2)}
-  .user-row{display:flex; align-items:center; gap:8px; margin-top:12px}
-  .user-row .lbl{font-size:11.5px; color:var(--ink-3); font-weight:600; text-transform:uppercase; letter-spacing:.06em}
-  .user-seg{display:flex; gap:4px; background:var(--line); padding:3px; border-radius:99px; flex:1}
-  .user-seg button{
-    flex:1; font-size:13.5px; font-weight:600; padding:7px 4px; border-radius:99px;
-    border:none; background:transparent; color:var(--ink-2); cursor:pointer;
-  }
-  .user-seg button.on{background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.08)}
   .progress{margin-top:12px; height:6px; border-radius:99px; background:var(--line); overflow:hidden}
   .progress > i{display:block; height:100%; width:0; background:var(--done); border-radius:99px; transition:width .35s ease}
   .progress-label{font-size:11.5px; color:var(--ink-2); margin-top:6px; display:flex; justify-content:space-between}
 
-  .filters{display:flex; gap:7px; padding:12px 18px 4px; overflow-x:auto; -webkit-overflow-scrolling:touch}
+  .filters{display:flex; flex-wrap:wrap; gap:7px; padding:12px 16px 4px; justify-content:center}
   .filters::-webkit-scrollbar{display:none}
   .chip{
     flex:0 0 auto; font-size:13px; padding:7px 14px; border-radius:99px;
@@ -113,10 +105,17 @@
   .prio-btn.on{background:var(--prio); color:var(--prio-ink); border-color:var(--prio)}
 
   .client-tag{font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; background:var(--contact-bg); color:var(--contact); padding:3px 7px; border-radius:6px}
+  .lead-tag{font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; background:var(--done-bg); color:var(--done); padding:3px 7px; border-radius:6px}
   .client-note{font-size:12px; color:var(--contact); margin-top:2px; font-weight:550}
 
   .value-row{display:flex; align-items:center; gap:9px; margin-top:11px; background:var(--follow-bg); padding:9px 11px; border-radius:10px}
-  .value-lbl{font-size:11.5px; font-weight:650; color:var(--follow); text-transform:uppercase; letter-spacing:.04em; white-space:nowrap}
+  .contact-box{margin-top:11px; background:var(--contact-bg); border:1px solid var(--contact); border-radius:10px; padding:11px}
+  .contact-h{font-size:11.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--contact); margin-bottom:9px; display:flex; align-items:center; gap:5px}
+  .contact-h i{font-size:14px}
+  .contact-field{display:flex; align-items:center; gap:9px; margin-bottom:7px}
+  .contact-field:last-child{margin-bottom:0}
+  .contact-lbl{flex:0 0 70px; font-size:12px; font-weight:600; color:var(--contact)}
+  .contact-input{flex:1; min-width:0; border:1px solid var(--line-strong); border-radius:8px; padding:8px 10px; font-size:15px; background:var(--surface); color:var(--ink); font-family:inherit}  .value-lbl{font-size:11.5px; font-weight:650; color:var(--follow); text-transform:uppercase; letter-spacing:.04em; white-space:nowrap}
   .value-input{flex:1; border:1px solid var(--line-strong); border-radius:8px; padding:8px 10px; font-size:15px; background:var(--surface); color:var(--ink); font-family:inherit; min-width:0}
   .meeting-row{display:flex; align-items:center; gap:9px; margin-top:8px; background:var(--follow-bg); padding:9px 11px; border-radius:10px}
   .meeting-row .value-lbl{display:inline-flex; align-items:center; gap:4px}
@@ -245,13 +244,6 @@
   <div class="eyebrow">Naturaltech · 10–13 jun · Anhembi <span class="sync-dot" id="sync-dot" title="Sincronização"></span><span class="sync-txt" id="sync-txt"></span></div>
   <h1>Prospecção presencial</h1>
   <div class="sub">Toque no quadrado para marcar visita. Os dados sincronizam entre os aparelhos.</div>
-  <div class="user-row">
-    <span class="lbl">Marcando como</span>
-    <div class="user-seg" id="user-seg">
-      <button data-u="Julia">Julia</button>
-      <button data-u="Gustavo">Gustavo</button>
-    </div>
-  </div>
   <div class="progress"><i id="bar"></i></div>
   <div class="progress-label"><span id="bar-txt">0 visitados</span><span id="bar-pct">0%</span></div>
 </header>
@@ -259,11 +251,13 @@
 <div class="filters" id="filters">
   <button class="chip on" data-f="all">Todos <span class="chip-count" data-c="all">0</span></button>
   <button class="chip" data-f="prio">★ Prioridades <span class="chip-count" data-c="prio">0</span></button>
-  <button class="chip" data-f="mine">Minhas visitas <span class="chip-count" data-c="mine">0</span></button>
+  <button class="chip" data-f="julia">Julia <span class="chip-count" data-c="julia">0</span></button>
+  <button class="chip" data-f="gustavo">Gustavo <span class="chip-count" data-c="gustavo">0</span></button>
   <button class="chip" data-f="pending">A visitar <span class="chip-count" data-c="pending">0</span></button>
   <button class="chip" data-f="follow">Follow-up <span class="chip-count" data-c="follow">0</span></button>
   <button class="chip" data-f="contact">Contato coletado <span class="chip-count" data-c="contact">0</span></button>
   <button class="chip" data-f="client">Clientes <span class="chip-count" data-c="client">0</span></button>
+  <button class="chip" data-f="lead">Leads <span class="chip-count" data-c="lead">0</span></button>
 </div>
 
 <div class="action-bar">
@@ -297,6 +291,7 @@
         </select>
       </label>
       <label class="fld-row"><input type="checkbox" id="f-client"><span>Já é cliente</span></label>
+      <label class="fld-row"><input type="checkbox" id="f-lead"><span>É lead</span></label>
       <label class="fld-row"><input type="checkbox" id="f-prio"><span>Marcar como prioridade</span></label>
     </div>
 
@@ -322,7 +317,7 @@
 </footer>
 
 <script>
-const BLOCKS = ["Bloco 1 · ruas 1 a 7","Bloco 2 · ruas 8 a 12","Bloco 3 · ruas 15 a 19","Sem bloco definido"];
+const BLOCKS = ["Bloco 1 · ruas 1 a 7","Bloco 2 · ruas 8 a 12","Bloco 3 · ruas 15 a 19","Bloco 4 · Arena (ruas 15 a 19, col. H-L)","Ruas 1 a 4","Ruas 5 a 8","Ruas 9 a 12","Ruas 13 a 16","Ruas 17 a 19","Sem rua definida","Sem bloco definido"];
 const DATA = [
   {id:"bendu", client:true, name:"Bendu", prio:true, block:"Bloco 3 · ruas 15 a 19", loc:"Rua G/H 15-16 (estande WeProtein)", size:"A confirmar"},
   {id:"intelligent", name:"Intelligent Foods", prio:true, block:"Sem bloco definido", loc:null, size:"Foodtech / startup B2B"},
@@ -365,6 +360,523 @@ const DATA = [
   {id:"granosquare", name:"Granosquare", block:"Bloco 3 · ruas 15 a 19", loc:"G/H 18-19", size:"A confirmar"},
   {id:"cells", name:"Cells", block:"Bloco 3 · ruas 15 a 19", loc:"G/H 19", size:"A confirmar"},
   {id:"pinc", client:true, name:"Pinc", block:"Bloco 3 · ruas 15 a 19", loc:"J 16", size:"A confirmar"},
+
+  {id:"saltyway", client:true, name:"Salty Way", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"J 17", size:"A confirmar"},
+  {id:"ada", client:true, name:"ADA Nutracêuticos", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"J 17", size:"A confirmar"},
+  {id:"liquidiv", lead:true, name:"Liquid I.V.", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"17/18", size:"Contato existe, estava em negociação"},
+  {id:"dux", lead:true, name:"Dux Company", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"H 15/16", size:"Temos contato. Vendemos p/ Eat Clean (marca menor deles)"},
+  {id:"soldiers", lead:true, name:"Grupo Soldiers", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"18", size:"Temos contato. Já marcamos antes, nunca conseguimos falar"},
+
+  {id:"yasen", lead:true, prio:true, name:"Yasen", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"15/16", size:"A confirmar"},
+  {id:"gloryful", lead:true, prio:true, name:"Gloryful", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"16/17", size:"A confirmar"},
+  {id:"vitalatman", lead:true, prio:true, name:"Vital Ātman", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"16/17", size:"A confirmar"},
+  {id:"healthpoint", lead:true, prio:true, name:"Health Point", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"16/17", size:"A confirmar"},
+  {id:"muwiz", lead:true, prio:true, name:"Muwiz", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"L 18", size:"A confirmar"},
+  {id:"joingo", lead:true, prio:true, name:"Joingo", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"L 18/19", size:"A confirmar"},
+  {id:"desincha", lead:true, prio:true, name:"Desinchá", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"K 16/17", size:"A confirmar"},
+  {id:"biobalance", lead:true, prio:true, name:"Biobalance", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"K 17", size:"A confirmar"},
+  {id:"bivy", lead:true, prio:true, name:"Bivy Nutrition", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"K 17", size:"A confirmar"},
+  {id:"rezolut", lead:true, prio:true, name:"Rezolut", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"K 17/18", size:"A confirmar"},
+  {id:"audax", lead:true, prio:true, name:"Audax", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"K 18", size:"A confirmar"},
+  {id:"oncells", lead:true, prio:true, name:"On Cells", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"K 18", size:"A confirmar"},
+  {id:"macrophytus", lead:true, prio:true, name:"Macrophytus", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"K 18", size:"A confirmar"},
+  {id:"amazonstruthio", lead:true, prio:true, name:"Amazon Struthio", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"K 18", size:"A confirmar"},
+  {id:"endogen", lead:true, prio:true, name:"Endogen", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"I 15/16", size:"A confirmar"},
+  {id:"newmillen", lead:true, prio:true, name:"New Millen", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"16/17", size:"A confirmar"},
+  {id:"velik", lead:true, prio:true, name:"Velik Coqueteleiras", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"J 17/18", size:"A confirmar"},
+  {id:"hiveglobal", lead:true, prio:true, name:"Hive Global", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"I 18", size:"A confirmar"},
+  {id:"snlab", lead:true, prio:true, name:"SN/Lab", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"I 18", size:"A confirmar"},
+  {id:"seritec", lead:true, prio:true, name:"Seritec", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"16/17", size:"A confirmar"},
+  {id:"rewplastic", lead:true, prio:true, name:"Rewplastic", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"16/17", size:"A confirmar"},
+  {id:"notorious", lead:true, prio:true, name:"Notorious Nutrition", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"17", size:"A confirmar"},
+  {id:"chefwhey", lead:true, prio:true, name:"Chef Whey", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"17/18", size:"A confirmar"},
+  {id:"rituaria", lead:true, prio:true, name:"Rituária", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"17/18", size:"A confirmar"},
+  {id:"gocase", lead:true, prio:true, name:"Gocase", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"17/18", size:"A confirmar"},
+  {id:"nutragold", lead:true, prio:true, name:"Nutra Gold", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"18/19", size:"A confirmar"},
+  {id:"maismu", lead:true, prio:true, name:"+mu", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"16/17", size:"A confirmar"},
+  {id:"adaptogen", lead:true, prio:true, name:"Adaptogen Science", block:"Bloco 4 · Arena (ruas 15 a 19, col. H-L)", loc:"17", size:"A confirmar"},
+  {id:"l_100voce_0", lead:true, name:"100% Você", block:"Ruas 9 a 12", loc:"9/10/H/I", size:"A confirmar"},
+  {id:"l_1purenutrition_1", lead:true, name:"1Pure Nutrition", block:"Ruas 1 a 4", loc:"4/K", size:"A confirmar"},
+  {id:"l_226ers_2", lead:true, name:"226ers", block:"Ruas 1 a 4", loc:"1/J", size:"A confirmar"},
+  {id:"l_acarioca_3", lead:true, name:"A Carioca", block:"Ruas 13 a 16", loc:"15/16/C/D", size:"A confirmar"},
+  {id:"l_agloriosapimenta_4", lead:true, name:"A Gloriosa Pimenta", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_abcave_5", lead:true, name:"Abcave", block:"Sem rua definida", loc:"A/1", size:"A confirmar"},
+  {id:"l_abemel_6", lead:true, name:"Abemel", block:"Ruas 17 a 19", loc:"19/C1/D", size:"A confirmar"},
+  {id:"l_abncassocbrasdenoz_7", lead:true, name:"ABNC Assoc. Bras. de Nozes, Castanhas e Frutas Secas", block:"Ruas 13 a 16", loc:"15/16/D/D1", size:"A confirmar"},
+  {id:"l_abracadabracereal_8", lead:true, name:"Abra Cadabra Cereal", block:"Ruas 9 a 12", loc:"11/12/F/G", size:"A confirmar"},
+  {id:"l_absolutnutrition_9", lead:true, name:"Absolut Nutrition", block:"Ruas 17 a 19", loc:"18/J", size:"A confirmar"},
+  {id:"l_adorra_10", lead:true, name:"Adorra", block:"Ruas 17 a 19", loc:"17/B", size:"A confirmar"},
+  {id:"l_afetocb_11", lead:true, name:"Afeto CB", block:"Ruas 13 a 16", loc:"15/16/A/B", size:"A confirmar"},
+  {id:"l_ag3group_12", lead:true, name:"AG3 Group", block:"Ruas 1 a 4", loc:"2/F", size:"A confirmar"},
+  {id:"l_agriculturafamilia_13", lead:true, name:"Agricultura Familiar da Bahia", block:"Ruas 9 a 12", loc:"9/10/G/H", size:"A confirmar"},
+  {id:"l_ahccpvtltd_14", lead:true, name:"AHCC PVT LTD", block:"Sem rua definida", loc:"G", size:"A confirmar"},
+  {id:"l_alcafoods_15", lead:true, name:"Alca Foods", block:"Ruas 1 a 4", loc:"3/F", size:"A confirmar"},
+  {id:"l_aleregourmet_16", lead:true, name:"Alere Gourmet", block:"Ruas 17 a 19", loc:"17/F", size:"A confirmar"},
+  {id:"l_alimentostiasonia_17", lead:true, name:"Alimentos Tia Sonia", block:"Ruas 5 a 8", loc:"8/9/E/F", size:"A confirmar"},
+  {id:"l_alkimiaprodutosnat_18", lead:true, name:"Alkimia Produtos Naturais e Artesanais", block:"Ruas 9 a 12", loc:"11/12/F/G", size:"A confirmar"},
+  {id:"l_allnutri_19", lead:true, name:"Allnutri", block:"Ruas 1 a 4", loc:"1/F", size:"A confirmar"},
+  {id:"l_allright_20", lead:true, name:"Allright", block:"Ruas 17 a 19", loc:"17/B", size:"A confirmar"},
+  {id:"l_almadegaia_21", lead:true, name:"Alma de Gaia", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_almaromiviccino_22", lead:true, name:"Almaromi Viccino", block:"Ruas 5 a 8", loc:"7/8/C/D", size:"A confirmar"},
+  {id:"l_alquimiadasaude_23", lead:true, name:"Alquimia da Saude", block:"Ruas 1 a 4", loc:"2/J", size:"A confirmar"},
+  {id:"l_ampalmitoecia_24", lead:true, name:"AM Palmito e Cia", block:"Ruas 1 a 4", loc:"4/5/E", size:"A confirmar"},
+  {id:"l_amakoslab_25", lead:true, name:"Amakos Lab", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_ambev_26", lead:true, name:"Ambev", block:"Ruas 13 a 16", loc:"14/15/D", size:"A confirmar"},
+  {id:"l_amendopro_27", lead:true, name:"Amendopro", block:"Ruas 1 a 4", loc:"1/2/J", size:"A confirmar"},
+  {id:"l_americanpistachiog_28", lead:true, name:"American Pistachio Growers", block:"Ruas 17 a 19", loc:"18/F", size:"A confirmar"},
+  {id:"l_americansugar_29", lead:true, name:"American Sugar", block:"Ruas 17 a 19", loc:"19/G", size:"A confirmar"},
+  {id:"l_aminna_30", lead:true, name:"Aminna", block:"Ruas 5 a 8", loc:"6/7/B", size:"A confirmar"},
+  {id:"l_aminovital_31", lead:true, name:"Aminovital", block:"Ruas 17 a 19", loc:"17/18/C1/D", size:"A confirmar"},
+  {id:"l_amonuno_32", lead:true, name:"Amo Nuno", block:"Ruas 17 a 19", loc:"18/C", size:"A confirmar"},
+  {id:"l_amomisaboarianatur_33", lead:true, name:"Amomi Saboaria Natural", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_amui_34", lead:true, name:"Amui!", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_anhuijndplasticpac_35", lead:true, name:"Anhui JND Plastic Packaging Co., Ltd", block:"Ruas 17 a 19", loc:"19", size:"A confirmar"},
+  {id:"l_apisflora_36", lead:true, name:"Apis Flora", block:"Ruas 5 a 8", loc:"7/8/I/J", size:"A confirmar"},
+  {id:"l_apisbrasil_37", lead:true, name:"Apis-Brasil", block:"Ruas 5 a 8", loc:"6/7/D", size:"A confirmar"},
+  {id:"l_apisnutri_38", lead:true, name:"Apisnutri", block:"Ruas 5 a 8", loc:"6/7/I/J", size:"A confirmar"},
+  {id:"l_apoena_39", lead:true, name:"Apoena", block:"Ruas 17 a 19", loc:"18/19/G/H", size:"A confirmar"},
+  {id:"l_arborea_40", lead:true, name:"Árborea", block:"Ruas 17 a 19", loc:"18/19/G/H", size:"A confirmar"},
+  {id:"l_asflor_41", lead:true, name:"Asflor", block:"Ruas 17 a 19", loc:"17", size:"A confirmar"},
+  {id:"l_assobio_42", lead:true, name:"Assobio", block:"Ruas 17 a 19", loc:"18/19/G/H", size:"A confirmar"},
+  {id:"l_assocbrasdochaabch_43", lead:true, name:"Assoc. Bras. do Chá - ABCHÁ", block:"Ruas 13 a 16", loc:"15/16/A/B", size:"A confirmar"},
+  {id:"l_atpack_44", lead:true, name:"At Pack", block:"Ruas 1 a 4", loc:"1/C", size:"A confirmar"},
+  {id:"l_athleticanutrition_45", lead:true, name:"Athletica Nutrition", block:"Ruas 1 a 4", loc:"3/4/I/J", size:"A confirmar"},
+  {id:"l_auroracoop_46", lead:true, name:"Aurora Coop", block:"Ruas 13 a 16", loc:"15/16/D/D4", size:"A confirmar"},
+  {id:"l_aweenergy_47", lead:true, name:"Awe Energy", block:"Ruas 1 a 4", loc:"4/5/E", size:"A confirmar"},
+  {id:"l_ayurterracosmetico_48", lead:true, name:"Ayurterra Cosméticos", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_ayurvedika_49", lead:true, name:"Ayurvédika", block:"Sem rua definida", loc:"B1/C", size:"A confirmar"},
+  {id:"l_azeitebatalha_50", lead:true, name:"Azeite Batalha", block:"Ruas 1 a 4", loc:"2/G/H", size:"A confirmar"},
+  {id:"l_azeitecapolivo_51", lead:true, name:"Azeite Capolivo", block:"Ruas 17 a 19", loc:"17/B/B1", size:"A confirmar"},
+  {id:"l_azzanaturais_52", lead:true, name:"Azza Naturais", block:"Ruas 13 a 16", loc:"16", size:"A confirmar"},
+  {id:"l_bananachipsmagario_53", lead:true, name:"Banana Chips Magário Sustentável", block:"Ruas 13 a 16", loc:"16/F", size:"A confirmar"},
+  {id:"l_bananinhapalmital_54", lead:true, name:"Bananinha Palmital", block:"Ruas 1 a 4", loc:"3/E", size:"A confirmar"},
+  {id:"l_bangreen_55", lead:true, name:"Bangreen", block:"Ruas 13 a 16", loc:"16/E/F", size:"A confirmar"},
+  {id:"l_basico_56", lead:true, name:"Basi.co", block:"Ruas 17 a 19", loc:"18/D1", size:"A confirmar"},
+  {id:"l_beclean_57", lead:true, name:"Be Clean", block:"Ruas 9 a 12", loc:"9/10/D1/E", size:"A confirmar"},
+  {id:"l_bebajamu_58", lead:true, name:"Beba Jamu", block:"Ruas 13 a 16", loc:"14/B", size:"A confirmar"},
+  {id:"l_beebrazil_59", lead:true, name:"Bee Brazil", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_beeglutenfree_60", lead:true, name:"Bee Gluten Free", block:"Ruas 9 a 12", loc:"11/12/F/G", size:"A confirmar"},
+  {id:"l_beewhey_61", lead:true, name:"Beewhey", block:"Ruas 9 a 12", loc:"10/11/G/H", size:"A confirmar"},
+  {id:"l_belive_62", lead:true, name:"Belive", block:"Ruas 17 a 19", loc:"18/B/B1", size:"A confirmar"},
+  {id:"l_bemgloria_63", lead:true, name:"Bemgloria", block:"Ruas 1 a 4", loc:"3/E/F", size:"A confirmar"},
+  {id:"l_benditagranola_64", lead:true, name:"Bendita Granola", block:"Ruas 13 a 16", loc:"15/16/G/H", size:"A confirmar"},
+  {id:"l_benini_65", lead:true, name:"Benini", block:"Ruas 9 a 12", loc:"10/K", size:"A confirmar"},
+  {id:"l_bertolinoiscoffee_66", lead:true, name:"Bertolino is Coffee", block:"Ruas 13 a 16", loc:"16/B/C", size:"A confirmar"},
+  {id:"l_biccossnacks_67", lead:true, name:"Bicco's Snacks", block:"Ruas 1 a 4", loc:"3/E/F", size:"A confirmar"},
+  {id:"l_bigboom_68", lead:true, name:"Big Boom", block:"Ruas 5 a 8", loc:"7/K", size:"A confirmar"},
+  {id:"l_bigens_69", lead:true, name:"Bigens", block:"Ruas 13 a 16", loc:"13/14/I/J", size:"A confirmar"},
+  {id:"l_biobiocosmeticos_70", lead:true, name:"Biobio Cosmeticos", block:"Ruas 17 a 19", loc:"18/C/C1", size:"A confirmar"},
+  {id:"l_biocaropharmaceuti_71", lead:true, name:"Biocaro Pharmaceutical Co., Ltd", block:"Ruas 17 a 19", loc:"18/D/D1", size:"A confirmar"},
+  {id:"l_biogummy_72", lead:true, name:"Biogummy", block:"Ruas 5 a 8", loc:"8/9/D1/E", size:"A confirmar"},
+  {id:"l_biomassalimentos_73", lead:true, name:"Biomass Alimentos", block:"Ruas 17 a 19", loc:"18/C1/D", size:"A confirmar"},
+  {id:"l_biopromais_74", lead:true, name:"Biopromais", block:"Ruas 1 a 4", loc:"1/2/F/G", size:"A confirmar"},
+  {id:"l_biowlnutrition_75", lead:true, name:"Biowl Nutrition", block:"Ruas 1 a 4", loc:"1/2/F/G", size:"A confirmar"},
+  {id:"l_blessybrasil_76", lead:true, name:"Blessy Brasil", block:"Ruas 9 a 12", loc:"10/11/J/K", size:"A confirmar"},
+  {id:"l_bodyaction_77", lead:true, name:"Body Action", block:"Ruas 1 a 4", loc:"1/H/I", size:"A confirmar"},
+  {id:"l_boldsnacks_78", lead:true, name:"Bold Snacks", block:"Ruas 9 a 12", loc:"12/13/I/J", size:"A confirmar"},
+  {id:"l_bombay_79", lead:true, name:"Bombay", block:"Ruas 5 a 8", loc:"8/9/F/G", size:"A confirmar"},
+  {id:"l_bomfloral_80", lead:true, name:"Bomfloral", block:"Ruas 13 a 16", loc:"15/16/A/B", size:"A confirmar"},
+  {id:"l_boneandjoint_81", lead:true, name:"Bone and Joint", block:"Ruas 17 a 19", loc:"18/B1/C", size:"A confirmar"},
+  {id:"l_boninatural_82", lead:true, name:"Boni Natural", block:"Ruas 1 a 4", loc:"1/2/F/G", size:"A confirmar"},
+  {id:"l_boticadaservas_83", lead:true, name:"Botica das Ervas", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_boticanaturalpet_84", lead:true, name:"Botica Natural Pet", block:"Ruas 5 a 8", loc:"5/B", size:"A confirmar"},
+  {id:"l_brasbolimportadora_85", lead:true, name:"Brasbol Importadora", block:"Ruas 1 a 4", loc:"3/A", size:"A confirmar"},
+  {id:"l_brasilervas_86", lead:true, name:"Brasil Ervas", block:"Ruas 9 a 12", loc:"9/10/D1/E", size:"A confirmar"},
+  {id:"l_brazoalimentos_87", lead:true, name:"Brazo Alimentos", block:"Ruas 5 a 8", loc:"7/8/K/L", size:"A confirmar"},
+  {id:"l_brbsuplementos_88", lead:true, name:"BRB Suplementos", block:"Ruas 17 a 19", loc:"19/C1/D", size:"A confirmar"},
+  {id:"l_breyerprodutosdasa_89", lead:true, name:"Breyer Produtos das Abelhas", block:"Ruas 1 a 4", loc:"3/4/G/H", size:"A confirmar"},
+  {id:"l_briv_90", lead:true, name:"Briv", block:"Ruas 1 a 4", loc:"4/5/E", size:"A confirmar"},
+  {id:"l_browipes_91", lead:true, name:"Bro Wipes", block:"Ruas 5 a 8", loc:"6/L", size:"A confirmar"},
+  {id:"l_byopure_92", lead:true, name:"Byopure", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_cacaujardim_93", lead:true, name:"Cacau Jardim", block:"Ruas 9 a 12", loc:"12/K", size:"A confirmar"},
+  {id:"l_cafellow_94", lead:true, name:"Cafellow", block:"Ruas 9 a 12", loc:"12/13/H", size:"A confirmar"},
+  {id:"l_caffeinearmy_95", lead:true, name:"Caffeine Army", block:"Ruas 13 a 16", loc:"15/16/D/D1", size:"A confirmar"},
+  {id:"l_caiba_96", lead:true, name:"Caiba", block:"Ruas 1 a 4", loc:"2/B", size:"A confirmar"},
+  {id:"l_caldosdavozzi_97", lead:true, name:"Caldos Davozzi", block:"Ruas 13 a 16", loc:"15/16/A/B", size:"A confirmar"},
+  {id:"l_calumichaseinfusoe_98", lead:true, name:"Calumi Chás e Infusões Especiais", block:"Ruas 13 a 16", loc:"13/14/D1/E", size:"A confirmar"},
+  {id:"l_camargoembalagens_99", lead:true, name:"Camargo Embalagens", block:"Ruas 17 a 19", loc:"17/C", size:"A confirmar"},
+  {id:"l_campolargo_100", lead:true, name:"Campo Largo", block:"Ruas 17 a 19", loc:"18/I/J", size:"A confirmar"},
+  {id:"l_canibalinc_101", lead:true, name:"Canibal Inc", block:"Ruas 17 a 19", loc:"18/I/J", size:"A confirmar"},
+  {id:"l_caravanadomarrocos_102", lead:true, name:"Caravana do Marrocos", block:"Ruas 1 a 4", loc:"2/C1", size:"A confirmar"},
+  {id:"l_carmenstaste_103", lead:true, name:"Carmens Taste", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_casadaalmacosmetic_104", lead:true, name:"Casa da Alma - Cosmética Terapêutica", block:"Ruas 17 a 19", loc:"18/C1", size:"A confirmar"},
+  {id:"l_casadosabor_105", lead:true, name:"Casa do Sabor", block:"Ruas 1 a 4", loc:"2/G/H", size:"A confirmar"},
+  {id:"l_casasdovalle_106", lead:true, name:"Casas do Valle", block:"Ruas 5 a 8", loc:"5/C", size:"A confirmar"},
+  {id:"l_casteloalimentos_107", lead:true, name:"Castelo Alimentos", block:"Ruas 5 a 8", loc:"7/8/B", size:"A confirmar"},
+  {id:"l_catarinensenutrica_108", lead:true, name:"Catarinense Nutricao", block:"Ruas 1 a 4", loc:"4/5/H/I", size:"A confirmar"},
+  {id:"l_celomax_109", lead:true, name:"Celomax", block:"Ruas 13 a 16", loc:"15", size:"A confirmar"},
+  {id:"l_centralnutrition_110", lead:true, name:"Central Nutrition", block:"Ruas 9 a 12", loc:"12/13/I", size:"A confirmar"},
+  {id:"l_ceuterra_111", lead:true, name:"Céu & Terra", block:"Ruas 9 a 12", loc:"9/I/J", size:"A confirmar"},
+  {id:"l_charomagfalimentos_112", lead:true, name:"Charoma / GF Alimentos", block:"Ruas 17 a 19", loc:"18/F", size:"A confirmar"},
+  {id:"l_charomapremium_113", lead:true, name:"Charoma Premium", block:"Ruas 17 a 19", loc:"19/D", size:"A confirmar"},
+  {id:"l_checkmate_114", lead:true, name:"Checkmate", block:"Ruas 13 a 16", loc:"15/16/A/B", size:"A confirmar"},
+  {id:"l_cimsal_115", lead:true, name:"Cimsal", block:"Ruas 9 a 12", loc:"11/12/F/G", size:"A confirmar"},
+  {id:"l_core_116", lead:true, name:"Co.Re", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_colheita_117", lead:true, name:"Colheita", block:"Ruas 1 a 4", loc:"3/E/F", size:"A confirmar"},
+  {id:"l_comidadedragao_118", lead:true, name:"Comida de Dragão", block:"Ruas 1 a 4", loc:"1", size:"A confirmar"},
+  {id:"l_conexus_119", lead:true, name:"Conexus", block:"Ruas 17 a 19", loc:"18/19/G/H", size:"A confirmar"},
+  {id:"l_conitodocesveganos_120", lead:true, name:"Conito Doces Veganos", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_cooates_121", lead:true, name:"Cooates", block:"Ruas 5 a 8", loc:"6/7/D/E", size:"A confirmar"},
+  {id:"l_coopafasb_122", lead:true, name:"Coopafasb", block:"Ruas 5 a 8", loc:"6/7/D/E", size:"A confirmar"},
+  {id:"l_coopemapi_123", lead:true, name:"Coopemapi", block:"Ruas 5 a 8", loc:"6/7/D/E", size:"A confirmar"},
+  {id:"l_coopagricultoresea_124", lead:true, name:"Coop. Agricultores e Apicultores do Vale do Jequitinhonha", block:"Ruas 13 a 16", loc:"16/B/C", size:"A confirmar"},
+  {id:"l_cooperja_125", lead:true, name:"Cooperjá", block:"Sem rua definida", loc:"A confirmar", size:"A confirmar"},
+  {id:"l_cooperland_126", lead:true, name:"Cooperland", block:"Ruas 5 a 8", loc:"6/7/D/E", size:"A confirmar"},
+  {id:"l_cooperoeste_127", lead:true, name:"Cooperoeste", block:"Ruas 5 a 8", loc:"6/7/D/E", size:"A confirmar"},
+  {id:"l_cooperita_128", lead:true, name:"Cooperita", block:"Ruas 5 a 8", loc:"6/7/D/E", size:"A confirmar"},
+  {id:"l_coopfam_129", lead:true, name:"Coopfam", block:"Ruas 5 a 8", loc:"6/7/D/E", size:"A confirmar"},
+  {id:"l_copraalimentos_130", lead:true, name:"Copra Alimentos", block:"Ruas 5 a 8", loc:"6/E", size:"A confirmar"},
+  {id:"l_crazycandycircus_131", lead:true, name:"Crazy Candy Circus", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_creapurecreavitali_132", lead:true, name:"Creapure / Creavitalis (Alzchem Trostberg GMBH)", block:"Ruas 9 a 12", loc:"11/K", size:"A confirmar"},
+  {id:"l_curadaalmablue_133", lead:true, name:"Cura da Alma Blue", block:"Sem rua definida", loc:"A confirmar", size:"A confirmar"},
+  {id:"l_curaprox_134", lead:true, name:"Curaprox", block:"Ruas 1 a 4", loc:"4/5/E", size:"A confirmar"},
+  {id:"l_damagrinha_135", lead:true, name:"Da Magrinha", block:"Ruas 17 a 19", loc:"19/B/B1", size:"A confirmar"},
+  {id:"l_daterrinha_136", lead:true, name:"Da Terrinha", block:"Ruas 5 a 8", loc:"7/C", size:"A confirmar"},
+  {id:"l_datribu_137", lead:true, name:"Da Tribu", block:"Ruas 9 a 12", loc:"12/13/D1/E", size:"A confirmar"},
+  {id:"l_dacolonia_138", lead:true, name:"Dacolônia", block:"Ruas 17 a 19", loc:"18/19/G/H", size:"A confirmar"},
+  {id:"l_danesecompany_139", lead:true, name:"Dane'se Company", block:"Ruas 5 a 8", loc:"7/8/G/H", size:"A confirmar"},
+  {id:"l_deiva_140", lead:true, name:"De Iva", block:"Ruas 1 a 4", loc:"4/D", size:"A confirmar"},
+  {id:"l_delaterre_141", lead:true, name:"De La Terre", block:"Sem rua definida", loc:"D1/E", size:"A confirmar"},
+  {id:"l_delhiespeciarias_142", lead:true, name:"Delhi Especiarias", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_delichatmaiscorpor_143", lead:true, name:"Deli Chat #maiscorporfavor", block:"Ruas 1 a 4", loc:"1", size:"A confirmar"},
+  {id:"l_dellynutrition_144", lead:true, name:"Delly Nutrition", block:"Ruas 13 a 16", loc:"15/16/A/B", size:"A confirmar"},
+  {id:"l_desplacesysplac_145", lead:true, name:"Desplac e Sysplac", block:"Ruas 13 a 16", loc:"16/17/J/K", size:"A confirmar"},
+  {id:"l_diethouse_146", lead:true, name:"Diet House", block:"Ruas 13 a 16", loc:"16/G", size:"A confirmar"},
+  {id:"l_dilutepremium_147", lead:true, name:"Dilute Premium", block:"Ruas 1 a 4", loc:"4/5/E", size:"A confirmar"},
+  {id:"l_divcosmetics_148", lead:true, name:"Div Cosmetics", block:"Sem rua definida", loc:"F", size:"A confirmar"},
+  {id:"l_divinnahgaia_149", lead:true, name:"Divinnah Gaia", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_divinut_150", lead:true, name:"Divinut", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_dizisnacks_151", lead:true, name:"Dizi Snacks", block:"Ruas 13 a 16", loc:"15/16/D/D2", size:"A confirmar"},
+  {id:"l_dobro_152", lead:true, name:"Dobro", block:"Ruas 13 a 16", loc:"15/16/C/D", size:"A confirmar"},
+  {id:"l_dolcepotenza_153", lead:true, name:"Dolce Potenza", block:"Ruas 9 a 12", loc:"11/12/I/J", size:"A confirmar"},
+  {id:"l_domraiz_154", lead:true, name:"Dom Raiz", block:"Sem rua definida", loc:"E", size:"A confirmar"},
+  {id:"l_donacarioca_155", lead:true, name:"Dona Carioca", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_donasebastiana_156", lead:true, name:"Dona Sebastiana", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_donnaastasemgluten_157", lead:true, name:"Donna Asta Sem Gluten", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_drschar_158", lead:true, name:"Dr. Schar", block:"Ruas 13 a 16", loc:"15/B", size:"A confirmar"},
+  {id:"l_eazy365_159", lead:true, name:"Eazy 365", block:"Ruas 13 a 16", loc:"15/16/H/I", size:"A confirmar"},
+  {id:"l_ebralidistribuidor_160", lead:true, name:"Ebrali Distribuidora de Alimentos", block:"Ruas 17 a 19", loc:"17/D/D1", size:"A confirmar"},
+  {id:"l_ecozy_161", lead:true, name:"Ecozy", block:"Ruas 1 a 4", loc:"3/B", size:"A confirmar"},
+  {id:"l_ekobe_162", lead:true, name:"Ekobé", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_ekosnutraceutica_163", lead:true, name:"Ekos Nutraceutica", block:"Ruas 5 a 8", loc:"8/9/I/J", size:"A confirmar"},
+  {id:"l_emanaepiracanjubap_164", lead:true, name:"Emana e Piracanjuba Proforce", block:"Ruas 1 a 4", loc:"2/K/L", size:"A confirmar"},
+  {id:"l_embalagenssantaine_165", lead:true, name:"Embalagens Santa Ines S A", block:"Ruas 9 a 12", loc:"12/13/J/K", size:"A confirmar"},
+  {id:"l_emfetachyons_166", lead:true, name:"EMF e Tachyons", block:"Ruas 1 a 4", loc:"2/C", size:"A confirmar"},
+  {id:"l_emporiofit_167", lead:true, name:"Emporio Fit", block:"Ruas 9 a 12", loc:"11/12/F/G", size:"A confirmar"},
+  {id:"l_enchantechasfinos_168", lead:true, name:"Enchanté Chás Finos", block:"Ruas 17 a 19", loc:"19", size:"A confirmar"},
+  {id:"l_enterocare_169", lead:true, name:"Enterocare", block:"Ruas 13 a 16", loc:"15/16/I/J", size:"A confirmar"},
+  {id:"l_enviagora_170", lead:true, name:"Enviagora", block:"Ruas 1 a 4", loc:"4/5/E", size:"A confirmar"},
+  {id:"l_equaliv_171", lead:true, name:"Equaliv", block:"Ruas 17 a 19", loc:"17/A/B", size:"A confirmar"},
+  {id:"l_equilibriumdecor_172", lead:true, name:"Equilibrium Decor", block:"Ruas 13 a 16", loc:"15/16/H/I", size:"A confirmar"},
+  {id:"l_erikasulpinoculina_173", lead:true, name:"Erika Sulpino Culinária Saudável", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_espiritocacau_174", lead:true, name:"Espírito Cacau", block:"Ruas 1 a 4", loc:"3/B", size:"A confirmar"},
+  {id:"l_essenciasdeportuga_175", lead:true, name:"Essências de Portugal", block:"Ruas 17 a 19", loc:"19/C/C1", size:"A confirmar"},
+  {id:"l_essentia_176", lead:true, name:"Essentia", block:"Ruas 5 a 8", loc:"7/8/H/I", size:"A confirmar"},
+  {id:"l_estarmais_177", lead:true, name:"Estar Mais", block:"Ruas 13 a 16", loc:"14/15/J", size:"A confirmar"},
+  {id:"l_estoca_178", lead:true, name:"Estoca", block:"Ruas 5 a 8", loc:"5/E/F", size:"A confirmar"},
+  {id:"l_eureciclo_179", lead:true, name:"Eu Reciclo", block:"Ruas 1 a 4", loc:"3/D", size:"A confirmar"},
+  {id:"l_eurofarma_180", lead:true, name:"Eurofarma", block:"Ruas 1 a 4", loc:"3/C/C1", size:"A confirmar"},
+  {id:"l_evolue_181", lead:true, name:"Evolue", block:"Ruas 13 a 16", loc:"14/L", size:"A confirmar"},
+  {id:"l_experteasefacilita_182", lead:true, name:"Expertease Facilitadora para Negócios de Chás", block:"Ruas 13 a 16", loc:"15/16/A/B", size:"A confirmar"},
+  {id:"l_farofadonaleo_183", lead:true, name:"Farofa Dona Léo", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_fibratobiscoitos_184", lead:true, name:"Fibrato Biscoitos", block:"Ruas 1 a 4", loc:"2/G/H", size:"A confirmar"},
+  {id:"l_fitbarbarradeprote_185", lead:true, name:"Fitbar Barra de Proteína Salgada", block:"Ruas 13 a 16", loc:"15/16/C/D", size:"A confirmar"},
+  {id:"l_fito_186", lead:true, name:"Fitô", block:"Ruas 1 a 4", loc:"1/G/H", size:"A confirmar"},
+  {id:"l_fixsnacks_187", lead:true, name:"Fix Snacks", block:"Ruas 17 a 19", loc:"18/19/G/H", size:"A confirmar"},
+  {id:"l_flordejambu_188", lead:true, name:"Flor de Jambu", block:"Ruas 5 a 8", loc:"8/9/K/L", size:"A confirmar"},
+  {id:"l_floranativadobrasi_189", lead:true, name:"Flora Nativa do Brasil", block:"Ruas 13 a 16", loc:"14/15/A", size:"A confirmar"},
+  {id:"l_florestal_190", lead:true, name:"Florestal", block:"Ruas 13 a 16", loc:"16", size:"A confirmar"},
+  {id:"l_fonteslog_191", lead:true, name:"Fonteslog", block:"Ruas 13 a 16", loc:"14/15/A", size:"A confirmar"},
+  {id:"l_foolhasodaprebioti_192", lead:true, name:"Foolha Soda Prebiótica", block:"Ruas 13 a 16", loc:"16", size:"A confirmar"},
+  {id:"l_fourlabnutrition_193", lead:true, name:"Fourlab Nutrition", block:"Ruas 13 a 16", loc:"16/A", size:"A confirmar"},
+  {id:"l_freakinawesomefrun_194", lead:true, name:"Freakin Awesome / Frunut", block:"Ruas 9 a 12", loc:"9/10/D1/E", size:"A confirmar"},
+  {id:"l_fusion_195", lead:true, name:"Fusion", block:"Ruas 9 a 12", loc:"10/K", size:"A confirmar"},
+  {id:"l_gelialgas_196", lead:true, name:"Gelialgas", block:"Ruas 1 a 4", loc:"3/F", size:"A confirmar"},
+  {id:"l_germanos_197", lead:true, name:"Germanos", block:"Ruas 1 a 4", loc:"1/2/F/G", size:"A confirmar"},
+  {id:"l_gestarorganics_198", lead:true, name:"Gestar Organics", block:"Ruas 5 a 8", loc:"8/C", size:"A confirmar"},
+  {id:"l_gheekalimentacaoin_199", lead:true, name:"Gheek - Alimentação Inteligente", block:"Ruas 17 a 19", loc:"19/D", size:"A confirmar"},
+  {id:"l_gloriespumantezero_200", lead:true, name:"Glori - Espumante Zero Álcool", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_glulac_201", lead:true, name:"Glulac", block:"Ruas 9 a 12", loc:"9/10/D1/E", size:"A confirmar"},
+  {id:"l_goldko_202", lead:true, name:"Gold & Ko", block:"Ruas 9 a 12", loc:"11/12/F/G", size:"A confirmar"},
+  {id:"l_goodseed_203", lead:true, name:"Goodseed", block:"Ruas 17 a 19", loc:"18", size:"A confirmar"},
+  {id:"l_gorenaartesgrafica_204", lead:true, name:"Gorena Artes Graficas", block:"Ruas 5 a 8", loc:"5/C", size:"A confirmar"},
+  {id:"l_graatafit_205", lead:true, name:"Graata Fit", block:"Ruas 1 a 4", loc:"3/E/F", size:"A confirmar"},
+  {id:"l_gracifunctionalcer_206", lead:true, name:"Graci Functional Cereals", block:"Ruas 1 a 4", loc:"1/2/F/G", size:"A confirmar"},
+  {id:"l_gramore_207", lead:true, name:"Gramore", block:"Ruas 1 a 4", loc:"3/B", size:"A confirmar"},
+  {id:"l_grandoro_208", lead:true, name:"Gran Doro", block:"Ruas 1 a 4", loc:"4/5/E", size:"A confirmar"},
+  {id:"l_granadaenergydrink_209", lead:true, name:"Granada Energy Drink", block:"Ruas 1 a 4", loc:"2/A", size:"A confirmar"},
+  {id:"l_graniamici_210", lead:true, name:"Grani Amici", block:"Ruas 13 a 16", loc:"15/16/C/D", size:"A confirmar"},
+  {id:"l_greenup_211", lead:true, name:"Green Up", block:"Ruas 1 a 4", loc:"2/G/H", size:"A confirmar"},
+  {id:"l_greenneatlimpezasu_212", lead:true, name:"Greenneat Limpeza Sustentável", block:"Ruas 5 a 8", loc:"7/8/B", size:"A confirmar"},
+  {id:"l_grupodocesourodemi_213", lead:true, name:"Grupo Doces Ouro de Minas", block:"Ruas 9 a 12", loc:"12/13/F/G", size:"A confirmar"},
+  {id:"l_guday_214", lead:true, name:"Guday", block:"Ruas 1 a 4", loc:"3/4/H", size:"A confirmar"},
+  {id:"l_gutgarden_215", lead:true, name:"Gut Garden", block:"Ruas 17 a 19", loc:"18/G", size:"A confirmar"},
+  {id:"l_harpiaamericana_216", lead:true, name:"Harpia Americana", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_hartsnatural_217", lead:true, name:"Hart's Natural", block:"Ruas 13 a 16", loc:"14/15/G/H", size:"A confirmar"},
+  {id:"l_haverohoogwegtbv_218", lead:true, name:"Havero Hoogwegt B V", block:"Ruas 13 a 16", loc:"16/C", size:"A confirmar"},
+  {id:"l_healthindustria_219", lead:true, name:"Health Indústria", block:"Ruas 1 a 4", loc:"3/H", size:"A confirmar"},
+  {id:"l_healthplast_220", lead:true, name:"Health Plast", block:"Ruas 17 a 19", loc:"17/K", size:"A confirmar"},
+  {id:"l_hecaplast_221", lead:true, name:"Hecaplast", block:"Ruas 1 a 4", loc:"4/E/F", size:"A confirmar"},
+  {id:"l_heineken_222", lead:true, name:"Heineken", block:"Ruas 1 a 4", loc:"3/G/H", size:"A confirmar"},
+  {id:"l_helliskin_223", lead:true, name:"Helli Skin", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_henriplast_224", lead:true, name:"Henriplast", block:"Ruas 1 a 4", loc:"4/5/I/J", size:"A confirmar"},
+  {id:"l_herbolabnathuepros_225", lead:true, name:"Herbolab / Nathue / Prosaúde", block:"Ruas 5 a 8", loc:"6/7/J/K", size:"A confirmar"},
+  {id:"l_herbonel_226", lead:true, name:"Herbonel", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_hlcaps_227", lead:true, name:"Hlcaps", block:"Ruas 13 a 16", loc:"13/14/K/L", size:"A confirmar"},
+  {id:"l_humacosmetica_228", lead:true, name:"Humã Cosmética", block:"Ruas 17 a 19", loc:"18/B1", size:"A confirmar"},
+  {id:"l_humara_229", lead:true, name:"Humara", block:"Ruas 13 a 16", loc:"14/K", size:"A confirmar"},
+  {id:"l_iabs_230", lead:true, name:"IABS", block:"Ruas 1 a 4", loc:"4/E/F", size:"A confirmar"},
+  {id:"l_iaecosmetics_231", lead:true, name:"IAE Cosmetics", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_iksembalagens_232", lead:true, name:"IKS Embalagens", block:"Ruas 17 a 19", loc:"19", size:"A confirmar"},
+  {id:"l_inate_233", lead:true, name:"Inate", block:"Ruas 13 a 16", loc:"16/C", size:"A confirmar"},
+  {id:"l_inatu_234", lead:true, name:"Inatu", block:"Ruas 17 a 19", loc:"18/19/G/H", size:"A confirmar"},
+  {id:"l_inbazz_235", lead:true, name:"Inbazz", block:"Ruas 9 a 12", loc:"10/11/L", size:"A confirmar"},
+  {id:"l_incensofenix_236", lead:true, name:"Incenso Fênix", block:"Ruas 13 a 16", loc:"14/15/G", size:"A confirmar"},
+  {id:"l_incubadoralocalein_237", lead:true, name:"Incubadora Local e Industria Bandeirante", block:"Ruas 1 a 4", loc:"4/5/D", size:"A confirmar"},
+  {id:"l_inkachatu_238", lead:true, name:"Inka Chatu", block:"Ruas 5 a 8", loc:"6/B", size:"A confirmar"},
+  {id:"l_innerbeauty_239", lead:true, name:"Inner Beauty", block:"Ruas 1 a 4", loc:"2/C/C1", size:"A confirmar"},
+  {id:"l_izzybluesistemas_240", lead:true, name:"Izzyblue Sistemas", block:"Ruas 1 a 4", loc:"1/C1", size:"A confirmar"},
+  {id:"l_jandiraalimentos_241", lead:true, name:"Jandira Alimentos", block:"Ruas 9 a 12", loc:"10/F/G", size:"A confirmar"},
+  {id:"l_jiabithealthtechno_242", lead:true, name:"Jiabit Health Technology Co., Ltd", block:"Ruas 1 a 4", loc:"2/J", size:"A confirmar"},
+  {id:"l_jiangsuyichaohealt_243", lead:true, name:"Jiangsu Yichao Health Technology Co., Ltd", block:"Ruas 9 a 12", loc:"11/12/K/L", size:"A confirmar"},
+  {id:"l_joingobrasil_244", lead:true, name:"Joingo Brasil", block:"Ruas 17 a 19", loc:"17/G", size:"A confirmar"},
+  {id:"l_jordanie_245", lead:true, name:"Jordanie", block:"Ruas 17 a 19", loc:"19/B1/C", size:"A confirmar"},
+  {id:"l_kanachasespeciais_246", lead:true, name:"Kan'a Chás Especiais", block:"Ruas 13 a 16", loc:"15/16/A/B", size:"A confirmar"},
+  {id:"l_katzespezialsoda_247", lead:true, name:"Katze Spezialsoda", block:"Ruas 9 a 12", loc:"9/10/D1/E", size:"A confirmar"},
+  {id:"l_kickoffwellness_248", lead:true, name:"Kick Off Wellness", block:"Ruas 9 a 12", loc:"12/L", size:"A confirmar"},
+  {id:"l_kippysnatural_249", lead:true, name:"Kippys Natural", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_konjacmassa_250", lead:true, name:"Konjac Massa", block:"Ruas 9 a 12", loc:"12/13/G/H", size:"A confirmar"},
+  {id:"l_kori_251", lead:true, name:"Kori", block:"Ruas 1 a 4", loc:"4/5/E", size:"A confirmar"},
+  {id:"l_kouda_252", lead:true, name:"Kouda", block:"Ruas 13 a 16", loc:"16/17/D/D1", size:"A confirmar"},
+  {id:"l_kura_253", lead:true, name:"Kura", block:"Ruas 9 a 12", loc:"9/10/D1/E", size:"A confirmar"},
+  {id:"l_laganexa_254", lead:true, name:"La Ganexa", block:"Ruas 1 a 4", loc:"3/J/K", size:"A confirmar"},
+  {id:"l_labb4_255", lead:true, name:"Labb4", block:"Ruas 17 a 19", loc:"18/19/G/H", size:"A confirmar"},
+  {id:"l_labelcolor_256", lead:true, name:"Labelcolor", block:"Ruas 1 a 4", loc:"4/F/G", size:"A confirmar"},
+  {id:"l_labflorasaudecompl_257", lead:true, name:"Labflora Saúde Complementar", block:"Ruas 9 a 12", loc:"11/12/F/G", size:"A confirmar"},
+  {id:"l_laboratoriomuwiz_258", lead:true, name:"Laboratorio Muwiz", block:"Ruas 17 a 19", loc:"18/K", size:"A confirmar"},
+  {id:"l_laborprint_259", lead:true, name:"Laborprint", block:"Ruas 1 a 4", loc:"4/B", size:"A confirmar"},
+  {id:"l_laciellachocolates_260", lead:true, name:"Laciella Chocolates", block:"Ruas 13 a 16", loc:"15/C", size:"A confirmar"},
+  {id:"l_lafit_261", lead:true, name:"Lafit", block:"Ruas 1 a 4", loc:"1/B", size:"A confirmar"},
+  {id:"l_lass_262", lead:true, name:"Lass", block:"Ruas 5 a 8", loc:"5/D", size:"A confirmar"},
+  {id:"l_latamfit_263", lead:true, name:"Latam Fit", block:"Ruas 5 a 8", loc:"6/E/F", size:"A confirmar"},
+  {id:"l_lauton_264", lead:true, name:"Lauton", block:"Ruas 9 a 12", loc:"10/11/I/J", size:"A confirmar"},
+  {id:"l_levecroc_265", lead:true, name:"Levecroc", block:"Ruas 13 a 16", loc:"15/16/D1/E", size:"A confirmar"},
+  {id:"l_leviassa_266", lead:true, name:"Leviassa", block:"Ruas 5 a 8", loc:"7/8/A", size:"A confirmar"},
+  {id:"l_liquidz_267", lead:true, name:"Liquidz", block:"Ruas 9 a 12", loc:"9/10/J/K", size:"A confirmar"},
+  {id:"l_lourencoalimentos_268", lead:true, name:"Lourenço Alimentos", block:"Ruas 1 a 4", loc:"4/C/D", size:"A confirmar"},
+  {id:"l_lowcucar_269", lead:true, name:"Lowçucar", block:"Ruas 1 a 4", loc:"3/4/B/C", size:"A confirmar"},
+  {id:"l_lowysnacks_270", lead:true, name:"Lowy Snacks", block:"Ruas 1 a 4", loc:"3/G", size:"A confirmar"},
+  {id:"l_lucicervejariasema_271", lead:true, name:"Luci Cervejaria Sem Álcool", block:"Ruas 13 a 16", loc:"15/16/C/D", size:"A confirmar"},
+  {id:"l_luckau_272", lead:true, name:"Luckau", block:"Ruas 5 a 8", loc:"6/D", size:"A confirmar"},
+  {id:"l_mdiasbranco_273", lead:true, name:"M Dias Branco", block:"Ruas 5 a 8", loc:"6/7/A/B", size:"A confirmar"},
+  {id:"l_maccadesidratados_274", lead:true, name:"Macça Desidratados", block:"Ruas 1 a 4", loc:"2/D/D1", size:"A confirmar"},
+  {id:"l_maeterra_275", lead:true, name:"Mãe Terra", block:"Ruas 13 a 16", loc:"14/15/E/F", size:"A confirmar"},
+  {id:"l_magicmedic_276", lead:true, name:"Magic Medic", block:"Ruas 1 a 4", loc:"3/C1/D", size:"A confirmar"},
+  {id:"l_maimai_277", lead:true, name:"Maimai", block:"Ruas 1 a 4", loc:"1/2/F/G", size:"A confirmar"},
+  {id:"l_mamawe_278", lead:true, name:"Mamawe", block:"Ruas 9 a 12", loc:"9/10/D1/E", size:"A confirmar"},
+  {id:"l_mandui_279", lead:true, name:"Mandui", block:"Ruas 17 a 19", loc:"18/G", size:"A confirmar"},
+  {id:"l_mantiqueirabrasil_280", lead:true, name:"Mantiqueira Brasil", block:"Ruas 5 a 8", loc:"7", size:"A confirmar"},
+  {id:"l_matasede_281", lead:true, name:"Mata Sede", block:"Ruas 1 a 4", loc:"1/2/F/G", size:"A confirmar"},
+  {id:"l_matchimaisquerefri_282", lead:true, name:"Matchi Mais que Refrigerante", block:"Ruas 1 a 4", loc:"2/G/H", size:"A confirmar"},
+  {id:"l_megalabel_283", lead:true, name:"Megalabel", block:"Ruas 5 a 8", loc:"6/A", size:"A confirmar"},
+  {id:"l_mercadodasuzana_284", lead:true, name:"Mercado da Suzana", block:"Ruas 1 a 4", loc:"3/E/F", size:"A confirmar"},
+  {id:"l_metalvegmaquinas_285", lead:true, name:"Metalveg Maquinas", block:"Ruas 1 a 4", loc:"1/2/F/G", size:"A confirmar"},
+  {id:"l_mexidona_286", lead:true, name:"Mexidona", block:"Ruas 5 a 8", loc:"6/7/E/F", size:"A confirmar"},
+  {id:"l_mineralprowaterska_287", lead:true, name:"Mineral Pro Water & Skal Up Night", block:"Ruas 1 a 4", loc:"4/5/B", size:"A confirmar"},
+  {id:"l_misturacrocante_288", lead:true, name:"Mistura Crocante", block:"Ruas 1 a 4", loc:"3/E/F", size:"A confirmar"},
+  {id:"l_miswakbrasil_289", lead:true, name:"Miswak Brasil", block:"Ruas 1 a 4", loc:"1/2/F/G", size:"A confirmar"},
+  {id:"l_mixnutri_290", lead:true, name:"Mix Nutri", block:"Ruas 5 a 8", loc:"7/8/J/K", size:"A confirmar"},
+  {id:"l_miyakea_291", lead:true, name:"Miya Kea", block:"Ruas 1 a 4", loc:"3/K", size:"A confirmar"},
+  {id:"l_mnpropolis_292", lead:true, name:"MN Propolis", block:"Ruas 5 a 8", loc:"6/7/G/H", size:"A confirmar"},
+  {id:"l_mocamualimentos_293", lead:true, name:"Mocamu Alimentos", block:"Ruas 1 a 4", loc:"2/G/H", size:"A confirmar"},
+  {id:"l_moinhoprodutossust_294", lead:true, name:"Moinho Produtos Sustentável", block:"Ruas 13 a 16", loc:"15/16/C/D", size:"A confirmar"},
+  {id:"l_moinhosvieira_295", lead:true, name:"Moinhos Vieira", block:"Ruas 5 a 8", loc:"7/F", size:"A confirmar"},
+  {id:"l_mombakcoldbrewcoff_296", lead:true, name:"Mombak Cold Brew Coffee", block:"Ruas 13 a 16", loc:"15/16/C/D", size:"A confirmar"},
+  {id:"l_mombora_297", lead:true, name:"Mombora", block:"Ruas 5 a 8", loc:"6/G", size:"A confirmar"},
+  {id:"l_monjulli_298", lead:true, name:"Mon Julli", block:"Ruas 1 a 4", loc:"2/G/H", size:"A confirmar"},
+  {id:"l_moncloachas_299", lead:true, name:"Moncloa Chás", block:"Ruas 13 a 16", loc:"15/16/A/B", size:"A confirmar"},
+  {id:"l_mondury_300", lead:true, name:"Mondury", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_monkai_301", lead:true, name:"Monkai", block:"Ruas 1 a 4", loc:"4/5/E", size:"A confirmar"},
+  {id:"l_mosellechocolatier_302", lead:true, name:"Moselle Chocolatier", block:"Ruas 1 a 4", loc:"2/C1/D", size:"A confirmar"},
+  {id:"l_moving_303", lead:true, name:"Moving", block:"Ruas 13 a 16", loc:"13/14/G/H", size:"A confirmar"},
+  {id:"l_mrstaste_304", lead:true, name:"Mrs Taste", block:"Ruas 9 a 12", loc:"11/12/J/K", size:"A confirmar"},
+  {id:"l_mudbebidasquenutre_305", lead:true, name:"Mud Bebidas que Nutrem", block:"Ruas 9 a 12", loc:"9/10/D1/E", size:"A confirmar"},
+  {id:"l_mundoverde_306", lead:true, name:"Mundo Verde", block:"Ruas 9 a 12", loc:"10/11/F/G", size:"A confirmar"},
+  {id:"l_muvon_307", lead:true, name:"Muvon", block:"Ruas 17 a 19", loc:"18/E", size:"A confirmar"},
+  {id:"l_muzieessence_308", lead:true, name:"Muzie Essence", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_mycelip_309", lead:true, name:"My Celip", block:"Ruas 1 a 4", loc:"2/K", size:"A confirmar"},
+  {id:"l_nacaoverde_310", lead:true, name:"Nação Verde", block:"Ruas 9 a 12", loc:"10/I", size:"A confirmar"},
+  {id:"l_napillus_311", lead:true, name:"Napillus", block:"Ruas 1 a 4", loc:"1/B", size:"A confirmar"},
+  {id:"l_nartecosmeticos_312", lead:true, name:"Narte Cosmeticos", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_natercoop_313", lead:true, name:"Nater.Coop", block:"Ruas 5 a 8", loc:"6/7/D/E", size:"A confirmar"},
+  {id:"l_natikos_314", lead:true, name:"Natikos", block:"Ruas 17 a 19", loc:"17/D1/E", size:"A confirmar"},
+  {id:"l_natucentro_315", lead:true, name:"Natucentro", block:"Sem rua definida", loc:"D1", size:"A confirmar"},
+  {id:"l_naturaldistribuido_316", lead:true, name:"Natural Distribuidora", block:"Ruas 13 a 16", loc:"14/15/D/D1", size:"A confirmar"},
+  {id:"l_naturallife_317", lead:true, name:"Natural Life", block:"Ruas 5 a 8", loc:"7/8/F/G", size:"A confirmar"},
+  {id:"l_naturalpop_318", lead:true, name:"Natural Pop", block:"Ruas 17 a 19", loc:"19/E", size:"A confirmar"},
+  {id:"l_naturefoodtech_319", lead:true, name:"Nature Foodtech", block:"Ruas 1 a 4", loc:"4/D", size:"A confirmar"},
+  {id:"l_natusam_320", lead:true, name:"Natusam", block:"Ruas 17 a 19", loc:"17/E/F", size:"A confirmar"},
+  {id:"l_natuser_321", lead:true, name:"Natuser", block:"Ruas 1 a 4", loc:"2/I", size:"A confirmar"},
+  {id:"l_naveia_322", lead:true, name:"Naveia", block:"Ruas 13 a 16", loc:"13/14/E/F", size:"A confirmar"},
+  {id:"l_nestibrasil_323", lead:true, name:"Nesti Brasil", block:"Ruas 17 a 19", loc:"17/C", size:"A confirmar"},
+  {id:"l_nestlenutritionhea_324", lead:true, name:"Nestlé Nutrition & Health", block:"Ruas 9 a 12", loc:"12/13/E/F", size:"A confirmar"},
+  {id:"l_newnutrition_325", lead:true, name:"Newnutrition", block:"Ruas 13 a 16", loc:"13/K/L", size:"A confirmar"},
+  {id:"l_nhamimami_326", lead:true, name:"Nhami Mami", block:"Ruas 17 a 19", loc:"18/E", size:"A confirmar"},
+  {id:"l_ninhoverderobust_327", lead:true, name:"Ninho Verde / Robust", block:"Ruas 1 a 4", loc:"3/K", size:"A confirmar"},
+  {id:"l_nobars_328", lead:true, name:"Nobars", block:"Ruas 1 a 4", loc:"2", size:"A confirmar"},
+  {id:"l_novaisetiquetas_329", lead:true, name:"Novais Etiquetas", block:"Ruas 17 a 19", loc:"17/I", size:"A confirmar"},
+  {id:"l_nowayco_330", lead:true, name:"Noway Co", block:"Ruas 1 a 4", loc:"4/A", size:"A confirmar"},
+  {id:"l_nsf_331", lead:true, name:"NSF", block:"Ruas 1 a 4", loc:"3/E", size:"A confirmar"},
+  {id:"l_nutify_332", lead:true, name:"Nutify", block:"Ruas 17 a 19", loc:"19", size:"A confirmar"},
+  {id:"l_nutrac_333", lead:true, name:"Nutra - C", block:"Ruas 5 a 8", loc:"5/K", size:"A confirmar"},
+  {id:"l_nutrify_334", lead:true, name:"Nutrify", block:"Ruas 5 a 8", loc:"5/J/K", size:"A confirmar"},
+  {id:"l_nutrify2_335", lead:true, name:"Nutrify (2)", block:"Ruas 5 a 8", loc:"5/6/I/J", size:"A confirmar"},
+  {id:"l_nutriiris_336", lead:true, name:"Nutriiris", block:"Ruas 13 a 16", loc:"16/B", size:"A confirmar"},
+  {id:"l_nutrimia_337", lead:true, name:"Nutrimia", block:"Ruas 1 a 4", loc:"1", size:"A confirmar"},
+  {id:"l_obvinutrition_338", lead:true, name:"Obvi Nutrition", block:"Ruas 1 a 4", loc:"3/L", size:"A confirmar"},
+  {id:"l_oceandrop_339", lead:true, name:"Ocean Drop", block:"Ruas 1 a 4", loc:"4/J/K", size:"A confirmar"},
+  {id:"l_oleicosdaamazonia_340", lead:true, name:"Oleicos da Amazonia", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_olivyco_341", lead:true, name:"Olivy&Co", block:"Sem rua definida", loc:"D", size:"A confirmar"},
+  {id:"l_omix_342", lead:true, name:"Omix", block:"Ruas 1 a 4", loc:"3/4/I", size:"A confirmar"},
+  {id:"l_only4_343", lead:true, name:"Only4", block:"Ruas 9 a 12", loc:"11/12/D1/E", size:"A confirmar"},
+  {id:"l_onutmilkplant_344", lead:true, name:"Onut Milk Plant", block:"Ruas 1 a 4", loc:"4/5/E", size:"A confirmar"},
+  {id:"l_opendrinks_345", lead:true, name:"Open Drinks", block:"Ruas 13 a 16", loc:"16/17/D", size:"A confirmar"},
+  {id:"l_orangebowlssenss_346", lead:true, name:"Orange Bowls / Senss", block:"Ruas 1 a 4", loc:"2/E", size:"A confirmar"},
+  {id:"l_organiconatural_347", lead:true, name:"Orgânico Natural", block:"Ruas 1 a 4", loc:"2/B/C", size:"A confirmar"},
+  {id:"l_ovacer_348", lead:true, name:"Ovacer", block:"Ruas 9 a 12", loc:"11/12/F/G", size:"A confirmar"},
+  {id:"l_pacco_349", lead:true, name:"Pacco", block:"Ruas 5 a 8", loc:"8/9/G/H", size:"A confirmar"},
+  {id:"l_packsterembalagens_350", lead:true, name:"Packster Embalagens Sustentaveis", block:"Ruas 5 a 8", loc:"5/D", size:"A confirmar"},
+  {id:"l_papaiquefez_351", lead:true, name:"Papai que Fez", block:"Ruas 17 a 19", loc:"17/C", size:"A confirmar"},
+  {id:"l_papapa_352", lead:true, name:"Papapá", block:"Ruas 9 a 12", loc:"10/11/D1/E", size:"A confirmar"},
+  {id:"l_paviodevela_353", lead:true, name:"Pavio de Vela", block:"Ruas 9 a 12", loc:"11/12/F/G", size:"A confirmar"},
+  {id:"l_pazzebiogourmet_354", lead:true, name:"Pazze Bio Gourmet", block:"Sem rua definida", loc:"D", size:"A confirmar"},
+  {id:"l_pecanita_355", lead:true, name:"Pecanita", block:"Ruas 13 a 16", loc:"15/16/D/D3", size:"A confirmar"},
+  {id:"l_pequipowercreiolab_356", lead:true, name:"Pequi Power (Creio Lab)", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_performancenutriti_357", lead:true, name:"Performance Nutrition", block:"Ruas 5 a 8", loc:"6/J/K", size:"A confirmar"},
+  {id:"l_petisconaturalpetf_358", lead:true, name:"Petisco Natural Pet Food", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_phytonatus_359", lead:true, name:"Phytonatus", block:"Ruas 17 a 19", loc:"19/C1/D", size:"A confirmar"},
+  {id:"l_pibetng_360", lead:true, name:"Pibe / TNG", block:"Ruas 1 a 4", loc:"2/H", size:"A confirmar"},
+  {id:"l_pilboxbrasil_361", lead:true, name:"Pilbox Brasil", block:"Ruas 1 a 4", loc:"1", size:"A confirmar"},
+  {id:"l_pinkcheeks_362", lead:true, name:"Pink Cheeks", block:"Ruas 13 a 16", loc:"15/16/J/K", size:"A confirmar"},
+  {id:"l_positivecompanyata_363", lead:true, name:"Positive Company (A Tal da Castanha / Possible / Plant Power)", block:"Ruas 5 a 8", loc:"5/6/H/I", size:"A confirmar"},
+  {id:"l_power1one_364", lead:true, name:"Power1one", block:"Ruas 1 a 4", loc:"4/5/J/K", size:"A confirmar"},
+  {id:"l_pradoprotein_365", lead:true, name:"Prado Protein", block:"Ruas 5 a 8", loc:"7/L", size:"A confirmar"},
+  {id:"l_pratigel_366", lead:true, name:"Pratigel", block:"Sem rua definida", loc:"B", size:"A confirmar"},
+  {id:"l_priscylafrancachoc_367", lead:true, name:"Priscyla França Chocolates", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_productoschurruca_368", lead:true, name:"Productos Churruca", block:"Ruas 1 a 4", loc:"2/E", size:"A confirmar"},
+  {id:"l_produtosoishii_369", lead:true, name:"Produtos Oishii", block:"Ruas 1 a 4", loc:"1", size:"A confirmar"},
+  {id:"l_projetoamazonia_370", lead:true, name:"Projeto Amazônia", block:"Ruas 17 a 19", loc:"17/18/G/H", size:"A confirmar"},
+  {id:"l_pronatu_371", lead:true, name:"Pronatu", block:"Ruas 17 a 19", loc:"19/C1/D", size:"A confirmar"},
+  {id:"l_prosizenutrition_372", lead:true, name:"Prosize Nutrition", block:"Ruas 13 a 16", loc:"15/K/L", size:"A confirmar"},
+  {id:"l_prosperato_373", lead:true, name:"Prosperato", block:"Ruas 1 a 4", loc:"1/B", size:"A confirmar"},
+  {id:"l_puravida_374", lead:true, name:"Puravida", block:"Ruas 9 a 12", loc:"11/12/H/I", size:"A confirmar"},
+  {id:"l_purificomelhordaag_375", lead:true, name:"Purific - O Melhor da Agua", block:"Ruas 17 a 19", loc:"19", size:"A confirmar"},
+  {id:"l_qualicoco_376", lead:true, name:"Qualicoco", block:"Ruas 9 a 12", loc:"11/12/E/F", size:"A confirmar"},
+  {id:"l_queennuts_377", lead:true, name:"Queennuts", block:"Ruas 13 a 16", loc:"15/16/D/D4", size:"A confirmar"},
+  {id:"l_quilombodoces_378", lead:true, name:"Quilombo Doces", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_quinoamaria_379", lead:true, name:"Quinoa Maria", block:"Ruas 17 a 19", loc:"17/E", size:"A confirmar"},
+  {id:"l_quituteriaculinari_380", lead:true, name:"Quituteria Culinária Artesanal", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_raiardaalma_381", lead:true, name:"Raiar da Alma", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_ralston_382", lead:true, name:"Ralston", block:"Ruas 1 a 4", loc:"3/E", size:"A confirmar"},
+  {id:"l_raumakpackaging_383", lead:true, name:"Raumak Packaging", block:"Ruas 1 a 4", loc:"1/C1", size:"A confirmar"},
+  {id:"l_recantodojakinha_384", lead:true, name:"Recanto do Jakinha", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_recantomagini_385", lead:true, name:"Recanto Magini", block:"Ruas 1 a 4", loc:"2/I", size:"A confirmar"},
+  {id:"l_reiterrakingearth_386", lead:true, name:"Rei Terra, King Earth", block:"Ruas 1 a 4", loc:"2/J", size:"A confirmar"},
+  {id:"l_relaxmedic_387", lead:true, name:"Relaxmedic", block:"Ruas 17 a 19", loc:"18/E", size:"A confirmar"},
+  {id:"l_reobotedocajuacaju_388", lead:true, name:"Reôbote do Caju à Cajuina", block:"Ruas 5 a 8", loc:"5/E", size:"A confirmar"},
+  {id:"l_reservamundi_389", lead:true, name:"Reserva Mundi", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_ressigi_390", lead:true, name:"Ressigi", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_rivierasorvetes_391", lead:true, name:"Riviera Sorvetes", block:"Ruas 17 a 19", loc:"17", size:"A confirmar"},
+  {id:"l_rksolutions_392", lead:true, name:"RK Solutions", block:"Ruas 17 a 19", loc:"18/1", size:"A confirmar"},
+  {id:"l_scosmeticosdobem_393", lead:true, name:"S Cosméticos do Bem", block:"Ruas 5 a 8", loc:"6/B", size:"A confirmar"},
+  {id:"l_sabarabucu_394", lead:true, name:"Sabarabuçu", block:"Ruas 17 a 19", loc:"18/19/A/B", size:"A confirmar"},
+  {id:"l_sacredoux_395", lead:true, name:"Sacre Doux", block:"Ruas 13 a 16", loc:"16/B/C", size:"A confirmar"},
+  {id:"l_salware_396", lead:true, name:"Salware", block:"Ruas 1 a 4", loc:"4/5/E", size:"A confirmar"},
+  {id:"l_sanavita_397", lead:true, name:"Sanavita", block:"Ruas 1 a 4", loc:"4/C", size:"A confirmar"},
+  {id:"l_sancapembalagens_398", lead:true, name:"Sancap Embalagens", block:"Ruas 5 a 8", loc:"8/9/I", size:"A confirmar"},
+  {id:"l_sanpecoffee_399", lead:true, name:"Sanpê Coffee", block:"Ruas 17 a 19", loc:"19/E", size:"A confirmar"},
+  {id:"l_santooleo_400", lead:true, name:"Santo Oleo", block:"Ruas 9 a 12", loc:"9/10/D1/E", size:"A confirmar"},
+  {id:"l_sashecompanycafe_401", lead:true, name:"Sashê Company Café", block:"Ruas 13 a 16", loc:"14/15/C", size:"A confirmar"},
+  {id:"l_sattva_402", lead:true, name:"Sattva", block:"Ruas 1 a 4", loc:"4/5/E", size:"A confirmar"},
+  {id:"l_schraibmann_403", lead:true, name:"Schraibmann", block:"Ruas 17 a 19", loc:"18/19/G/H", size:"A confirmar"},
+  {id:"l_sebraesc_404", lead:true, name:"Sebrae SC", block:"Ruas 1 a 4", loc:"1/2/F/G", size:"A confirmar"},
+  {id:"l_sebraemg_405", lead:true, name:"Sebrae MG", block:"Ruas 1 a 4", loc:"2/G/H", size:"A confirmar"},
+  {id:"l_sebraers_406", lead:true, name:"Sebrae RS", block:"Ruas 1 a 4", loc:"2/G/H", size:"A confirmar"},
+  {id:"l_sebraesp_407", lead:true, name:"Sebrae SP", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_sedeenergy_408", lead:true, name:"Sede Energy", block:"Ruas 17 a 19", loc:"17/F/G", size:"A confirmar"},
+  {id:"l_selvs_409", lead:true, name:"Selvs", block:"Ruas 9 a 12", loc:"11/12/G/H", size:"A confirmar"},
+  {id:"l_sensebenatural_410", lead:true, name:"Sensebe Natural", block:"Ruas 17 a 19", loc:"18/B1", size:"A confirmar"},
+  {id:"l_serranegradoces_411", lead:true, name:"Serra Negra Doces", block:"Ruas 9 a 12", loc:"10/11/H", size:"A confirmar"},
+  {id:"l_sharkpro_412", lead:true, name:"Shark Pró", block:"Ruas 1 a 4", loc:"1/2/F/G", size:"A confirmar"},
+  {id:"l_shiki_413", lead:true, name:"Shiki", block:"Ruas 5 a 8", loc:"6/7/D/E", size:"A confirmar"},
+  {id:"l_sistemaocb_414", lead:true, name:"Sistema OCB", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_sitiocampoverde_415", lead:true, name:"Sitio Campo Verde", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_sitionossavida_416", lead:true, name:"Sitio Nossa Vida", block:"Ruas 1 a 4", loc:"2/G/H", size:"A confirmar"},
+  {id:"l_sitiorosadovale_417", lead:true, name:"Sitio Rosa do Vale", block:"Ruas 5 a 8", loc:"6/F/G", size:"A confirmar"},
+  {id:"l_sollonutrition_418", lead:true, name:"Sollo Nutrition", block:"Ruas 1 a 4", loc:"2/G", size:"A confirmar"},
+  {id:"l_sopy_419", lead:true, name:"Sopy", block:"Ruas 9 a 12", loc:"11/12/F/G", size:"A confirmar"},
+  {id:"l_soubioembalagensed_420", lead:true, name:"Soubio - Embalagens e Descartáveis", block:"Ruas 1 a 4", loc:"1/2/H", size:"A confirmar"},
+  {id:"l_soufit_421", lead:true, name:"Soufit", block:"Ruas 17 a 19", loc:"18/19/G/H", size:"A confirmar"},
+  {id:"l_soulbrasilcuisine_422", lead:true, name:"Soul Brasil Cuisine", block:"Ruas 1 a 4", loc:"4/L", size:"A confirmar"},
+  {id:"l_souleve_423", lead:true, name:"Soul Eve", block:"Ruas 1 a 4", loc:"4/5/A/B", size:"A confirmar"},
+  {id:"l_spnegocios_424", lead:true, name:"SP Negócios", block:"Ruas 1 a 4", loc:"3/E/F", size:"A confirmar"},
+  {id:"l_specialealimentos_425", lead:true, name:"Speciale Alimentos", block:"Ruas 13 a 16", loc:"13/14/F/G", size:"A confirmar"},
+  {id:"l_stpierre_426", lead:true, name:"St. Pierre", block:"Ruas 1 a 4", loc:"1/C", size:"A confirmar"},
+  {id:"l_stonebone_427", lead:true, name:"Stone Bone", block:"Ruas 17 a 19", loc:"18/D1", size:"A confirmar"},
+  {id:"l_superbom_428", lead:true, name:"Superbom", block:"Ruas 5 a 8", loc:"8/9/J/K", size:"A confirmar"},
+  {id:"l_supraervas_429", lead:true, name:"Supra Ervas", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_surrealbisks_430", lead:true, name:"Surreal Bisks", block:"Ruas 13 a 16", loc:"16/17/D1/E", size:"A confirmar"},
+  {id:"l_svb_431", lead:true, name:"SVB", block:"Ruas 1 a 4", loc:"3/C", size:"A confirmar"},
+  {id:"l_switch_432", lead:true, name:"Switch", block:"Ruas 17 a 19", loc:"19", size:"A confirmar"},
+  {id:"l_tachaodeubatuba_433", lead:true, name:"Tachão de Ubatuba", block:"Ruas 5 a 8", loc:"5/G", size:"A confirmar"},
+  {id:"l_talcha_434", lead:true, name:"Talchá", block:"Ruas 17 a 19", loc:"17/B1/C", size:"A confirmar"},
+  {id:"l_taodeo_435", lead:true, name:"Tao Deo", block:"Ruas 13 a 16", loc:"15/16/A/B", size:"A confirmar"},
+  {id:"l_teashop_436", lead:true, name:"Tea Shop", block:"Ruas 13 a 16", loc:"15/16/A/B", size:"A confirmar"},
+  {id:"l_teashop2_437", lead:true, name:"Tea Shop (2)", block:"Ruas 13 a 16", loc:"13/14/J/K", size:"A confirmar"},
+  {id:"l_tecfag_438", lead:true, name:"Tecfag", block:"Ruas 5 a 8", loc:"5/6/C/D", size:"A confirmar"},
+  {id:"l_temperosdobarao_439", lead:true, name:"Temperos do Barão", block:"Ruas 5 a 8", loc:"6/7/C", size:"A confirmar"},
+  {id:"l_thalls_440", lead:true, name:"Thalls", block:"Ruas 13 a 16", loc:"15/16/A/B", size:"A confirmar"},
+  {id:"l_thekhora_441", lead:true, name:"The Khora", block:"Ruas 13 a 16", loc:"14/15/D/D1", size:"A confirmar"},
+  {id:"l_therapi_442", lead:true, name:"Therapi", block:"Ruas 1 a 4", loc:"2/B", size:"A confirmar"},
+  {id:"l_tiliform_443", lead:true, name:"Tiliform", block:"Ruas 1 a 4", loc:"3/E/F", size:"A confirmar"},
+  {id:"l_titaoitalianovegan_444", lead:true, name:"Titao Italiano Veganos", block:"Ruas 17 a 19", loc:"18/E", size:"A confirmar"},
+  {id:"l_toccai_445", lead:true, name:"Toccai", block:"Ruas 1 a 4", loc:"2/G/H", size:"A confirmar"},
+  {id:"l_tomateirasetc_446", lead:true, name:"Tomateiras etc", block:"Ruas 13 a 16", loc:"15/16/C/D", size:"A confirmar"},
+  {id:"l_topfoodbrasil_447", lead:true, name:"Top Food Brasil", block:"Ruas 1 a 4", loc:"3/E/F", size:"A confirmar"},
+  {id:"l_totalbraz_448", lead:true, name:"Totalbraz", block:"Ruas 1 a 4", loc:"3/D1", size:"A confirmar"},
+  {id:"l_tropdan_449", lead:true, name:"Tropdan", block:"Ruas 1 a 4", loc:"4/C", size:"A confirmar"},
+  {id:"l_true_450", lead:true, name:"True", block:"Ruas 5 a 8", loc:"6/7/H/I", size:"A confirmar"},
+  {id:"l_trustnutrition_451", lead:true, name:"Trust Nutrition", block:"Ruas 13 a 16", loc:"14/15/K", size:"A confirmar"},
+  {id:"l_ueifitfoodranchode_452", lead:true, name:"Uei Fit Food, Rancho de Minas", block:"Ruas 1 a 4", loc:"1/E", size:"A confirmar"},
+  {id:"l_uevo_453", lead:true, name:"Uévo", block:"Ruas 1 a 4", loc:"4/K/L", size:"A confirmar"},
+  {id:"l_underlabz_454", lead:true, name:"Under Labz", block:"Ruas 1 a 4", loc:"3/J/K", size:"A confirmar"},
+  {id:"l_unilife_455", lead:true, name:"Unilife", block:"Ruas 5 a 8", loc:"8/9/H", size:"A confirmar"},
+  {id:"l_unlock_456", lead:true, name:"Unlock", block:"Ruas 5 a 8", loc:"6/C", size:"A confirmar"},
+  {id:"l_upbrasilsuplemento_457", lead:true, name:"Up Brasil Suplementos", block:"Ruas 9 a 12", loc:"9/K", size:"A confirmar"},
+  {id:"l_urucundaamazonia_458", lead:true, name:"Uruçun da Amazônia", block:"Ruas 17 a 19", loc:"18/19/G/H", size:"A confirmar"},
+  {id:"l_valgroup_459", lead:true, name:"Valgroup", block:"Ruas 1 a 4", loc:"4/E", size:"A confirmar"},
+  {id:"l_vanillabrasil_460", lead:true, name:"Vanilla Brasil", block:"Ruas 9 a 12", loc:"9/F/G", size:"A confirmar"},
+  {id:"l_vidaveg_461", lead:true, name:"Vidaveg", block:"Ruas 13 a 16", loc:"14/15/F", size:"A confirmar"},
+  {id:"l_videira7alimentos_462", lead:true, name:"Videira 7 Alimentos", block:"Ruas 1 a 4", loc:"3/J", size:"A confirmar"},
+  {id:"l_vimacedocereais_463", lead:true, name:"Vimacedo Cereais", block:"Ruas 13 a 16", loc:"14/15/B/C", size:"A confirmar"},
+  {id:"l_vinagredemacafazen_464", lead:true, name:"Vinagre de Maçá Fazenda São Roque", block:"Ruas 13 a 16", loc:"16/B", size:"A confirmar"},
+  {id:"l_vinagremontesverde_465", lead:true, name:"Vinagre Montes Verdes", block:"Ruas 5 a 8", loc:"6/F", size:"A confirmar"},
+  {id:"l_vinicolaaurora_466", lead:true, name:"Vinícola Aurora", block:"Ruas 13 a 16", loc:"15/16/D/D4", size:"A confirmar"},
+  {id:"l_vitafor_467", lead:true, name:"Vitafor", block:"Ruas 13 a 16", loc:"13/14/H/I", size:"A confirmar"},
+  {id:"l_vitanuts_468", lead:true, name:"Vitanuts", block:"Ruas 5 a 8", loc:"5/F", size:"A confirmar"},
+  {id:"l_vittai_469", lead:true, name:"Vittai", block:"Ruas 1 a 4", loc:"3/F", size:"A confirmar"},
+  {id:"l_voyanutrition_470", lead:true, name:"Voya Nutrition", block:"Ruas 1 a 4", loc:"3/E/F", size:"A confirmar"},
+  {id:"l_wendaingredientes_471", lead:true, name:"Wenda Ingredientes", block:"Ruas 5 a 8", loc:"5/L", size:"A confirmar"},
+  {id:"l_weshot_472", lead:true, name:"Weshot", block:"Ruas 5 a 8", loc:"6/K", size:"A confirmar"},
+  {id:"l_wickbold_473", lead:true, name:"Wickbold", block:"Ruas 1 a 4", loc:"2/F", size:"A confirmar"},
+  {id:"l_winstage_474", lead:true, name:"Winstage", block:"Ruas 1 a 4", loc:"3/I", size:"A confirmar"},
+  {id:"l_wondr_475", lead:true, name:"Wondr", block:"Ruas 1 a 4", loc:"3/G", size:"A confirmar"},
+  {id:"l_wsnaturais_476", lead:true, name:"WS Naturais", block:"Ruas 1 a 4", loc:"3/D", size:"A confirmar"},
+  {id:"l_wwf_477", lead:true, name:"WWF", block:"Ruas 13 a 16", loc:"15/16/K/L", size:"A confirmar"},
+  {id:"l_yosen_478", lead:true, name:"Yosen", block:"Ruas 5 a 8", loc:"5/6/G/H", size:"A confirmar"},
+  {id:"l_zaya_479", lead:true, name:"Zaya", block:"Ruas 5 a 8", loc:"5/A", size:"A confirmar"},
+  {id:"l_zonacriativa_480", lead:true, name:"Zona Criativa", block:"Ruas 1 a 4", loc:"4/5/E", size:"A confirmar"},
+  {id:"l_ztgrowth_481", lead:true, name:"Ztgrowth", block:"Sem rua definida", loc:"C", size:"A confirmar"},
 ];
 
 /* ============================================================
@@ -373,7 +885,7 @@ const DATA = [
    Enquanto estiverem em branco, o app funciona só local (sem sincronizar).
    ============================================================ */
 const SUPABASE_URL = "https://maqdyqnrjevuhrfsnwnd.supabase.co";   // ex: https://xxxxx.supabase.co
-const SUPABASE_KEY = "sb_publishable_lsnO7iTRRdjJUDWZ5B4esg_J3vFdQtV";   // cole aqui a chave publishable (sb_publishable_...)
+const SUPABASE_KEY = "";   // cole aqui a chave publishable (sb_publishable_...)
 const ROW_ID = "shared";   // todos compartilham a mesma linha
 /* ============================================================ */
 
@@ -382,9 +894,22 @@ let store = {};
 try { store = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){ store = {}; }
 
 function normalizeStore(){
-  store.users = store.users || {};
-  store.users.Julia = store.users.Julia || {};
-  store.users.Gustavo = store.users.Gustavo || {};
+  store.shared = store.shared || {};
+  // Migração: se havia status separados por usuário (versão antiga), funde no compartilhado
+  if(store.users){
+    ["Julia","Gustavo"].forEach(u => {
+      const us = store.users[u] || {};
+      Object.keys(us).forEach(id => {
+        const cur = store.shared[id] || (store.shared[id] = {visited:false, contact:false, follow:false, note:""});
+        const old = us[id] || {};
+        cur.visited = cur.visited || old.visited;
+        cur.contact = cur.contact || old.contact;
+        cur.follow = cur.follow || old.follow;
+        if(!cur.note && old.note) cur.note = old.note;
+      });
+    });
+    delete store.users;
+  }
   store.prio = store.prio || {};
   store.assign = store.assign || {};
   store.deal = store.deal || {};
@@ -392,8 +917,7 @@ function normalizeStore(){
 }
 normalizeStore();
 
-let user = store.__user || "Julia";
-let state = store.users[user];
+let state = store.shared;
 
 // ---- Camada de sincronização (Supabase) ----
 const sbEnabled = !!(SUPABASE_URL && SUPABASE_KEY && window.supabase);
@@ -405,7 +929,6 @@ function setSync(cls, txt){
 }
 
 function save(){
-  store.__user = user;
   try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e){}
   if(applyingRemote) return;            // não reenvia o que acabou de chegar do outro aparelho
   if(sbEnabled){
@@ -418,46 +941,48 @@ function save(){
 async function pushRemote(){
   if(!sb) return;
   const payload = JSON.parse(JSON.stringify(store));
-  delete payload.__user;   // a pessoa selecionada é local de cada aparelho
   const { error } = await sb.from("prospec").upsert({ id: ROW_ID, data: payload, updated_at: new Date().toISOString() });
   setSync(error ? "err" : "ok", error ? "erro ao salvar" : "sincronizado");
 }
 
 function mergeRemote(remote){
   if(!remote) return;
-  const localUser = store.__user;
   store = remote;
-  store.__user = localUser;
   normalizeStore();
-  user = store.__user || user || "Julia";
-  state = store.users[user];
+  state = store.shared;
 }
 
 async function initSync(){
   if(!sbEnabled){ setSync("off","modo local"); return; }
-  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  } catch(e){ setSync("err","erro de config"); return; }
   setSync("sync","conectando");
   try {
     const { data, error } = await sb.from("prospec").select("data").eq("id", ROW_ID).maybeSingle();
     if(error) throw error;
-    if(data && data.data){ applyingRemote = true; mergeRemote(data.data); applyingRemote = false; syncUser(); render(); }
+    if(data && data.data){ applyingRemote = true; mergeRemote(data.data); applyingRemote = false; render(); }
     else { await pushRemote(); }   // primeira vez: cria a linha
     setSync("ok","sincronizado");
-  } catch(e){ setSync("err","sem conexão"); }
+  } catch(e){ setSync("err","sem conexão"); render(); return; }
 
   // Realtime: quando o outro aparelho salvar, atualiza a tela
-  sb.channel("prospec-"+ROW_ID)
-    .on("postgres_changes", { event:"*", schema:"public", table:"prospec", filter:"id=eq."+ROW_ID }, payload => {
-      const remote = payload.new && payload.new.data;
-      if(remote){ applyingRemote = true; mergeRemote(remote); applyingRemote = false; syncUser(); render(); setSync("ok","atualizado"); }
-    })
-    .subscribe();
+  try {
+    sb.channel("prospec-"+ROW_ID)
+      .on("postgres_changes", { event:"*", schema:"public", table:"prospec", filter:"id=eq."+ROW_ID }, payload => {
+        try {
+          const remote = payload.new && payload.new.data;
+          if(remote){ applyingRemote = true; mergeRemote(remote); applyingRemote = false; render(); setSync("ok","atualizado"); }
+        } catch(err){ /* ignora payload malformado */ }
+      })
+      .subscribe();
+  } catch(e){ /* realtime opcional: app segue funcionando sem ele */ }
 }
 
 function st(id){ return state[id] || (state[id] = {visited:false, contact:false, follow:false, note:""}); }
 function isPrio(it){ return (it.id in store.prio) ? store.prio[it.id] : !!it.prio; }
 function assignOf(id){ return store.assign[id] || null; }
-function deal(id){ return store.deal[id] || (store.deal[id] = {value:"", lost:false, lostReason:"", won:false, wonValue:"", meeting:""}); }
+function deal(id){ return store.deal[id] || (store.deal[id] = {value:"", lost:false, lostReason:"", won:false, wonValue:"", meeting:"", cName:"", cRole:"", cPhone:"", cEmail:""}); }
 
 let filter = "all";
 function items(){ return DATA.concat(store.custom); }
@@ -494,8 +1019,10 @@ function matches(it){
   if(filter==="pending") return !s.visited;
   if(filter==="follow") return s.follow;
   if(filter==="contact") return s.contact;
-  if(filter==="mine") return assignOf(it.id)===user;
+  if(filter==="julia") return assignOf(it.id)==="Julia";
+  if(filter==="gustavo") return assignOf(it.id)==="Gustavo";
   if(filter==="client") return !!it.client;
+  if(filter==="lead") return !!it.lead;
   return true;
 }
 
@@ -558,7 +1085,8 @@ function card(it){
   const nw = document.createElement("div"); nw.className="name-wrap";
   const nm = document.createElement("div"); nm.className="name";
   nm.innerHTML = (prio?'<span class="star">★</span>':'') + it.name
-    + (it.client?' <span class="client-tag">Cliente</span>':'');
+    + (it.client?' <span class="client-tag">Cliente</span>':'')
+    + (it.lead?' <span class="lead-tag">Lead</span>':'');
   const lc = document.createElement("div");
   lc.className = "loc" + (it.loc?"":" unknown");
   lc.textContent = it.loc || "Localização a confirmar no balcão / app";
@@ -583,7 +1111,7 @@ function card(it){
       if(tb.dataset.armed==="1"){
         store.custom = store.custom.filter(x => x.id !== it.id);
         delete store.deal[it.id]; delete store.assign[it.id]; delete store.prio[it.id];
-        delete store.users.Julia[it.id]; delete store.users.Gustavo[it.id];
+        delete store.shared[it.id];
         save(); render();
       } else {
         tb.dataset.armed="1"; tb.classList.add("armed"); tb.innerHTML="<i class='ti ti-trash'></i> Excluir?";
@@ -655,6 +1183,29 @@ function card(it){
   sr.appendChild(stBtn(it,"contact","Contato"));
   sr.appendChild(stBtn(it,"follow","Follow-up"));
   c.appendChild(sr);
+
+  // Campos de contato: aparecem quando "Contato" está marcado
+  if(s.contact){
+    const cw = document.createElement("div"); cw.className="contact-box";
+    cw.innerHTML = '<div class="contact-h"><i class="ti ti-user"></i> Dados do contato</div>';
+    const mkField = (key, label, ph, type) => {
+      const row = document.createElement("div"); row.className="contact-field";
+      const lb = document.createElement("span"); lb.className="contact-lbl"; lb.textContent=label;
+      const inp = document.createElement("input");
+      inp.className="contact-input"; inp.placeholder=ph;
+      if(type) inp.type=type;
+      if(type==="tel") inp.inputMode="tel";
+      inp.value = d[key] || "";
+      inp.oninput = () => { d[key] = inp.value; save(); };
+      row.appendChild(lb); row.appendChild(inp);
+      return row;
+    };
+    cw.appendChild(mkField("cName","Nome","Nome da pessoa"));
+    cw.appendChild(mkField("cRole","Cargo","Ex: comprador, sócio, marketing"));
+    cw.appendChild(mkField("cPhone","WhatsApp","(11) 99999-9999","tel"));
+    cw.appendChild(mkField("cEmail","Email","email@empresa.com","email"));
+    c.appendChild(cw);
+  }
 
   // Campos de follow-up: valor potencial + agendamento de reunião
   if(s.follow){
@@ -791,8 +1342,10 @@ function countFor(fv){
     if(fv==="pending") return !s.visited;
     if(fv==="follow") return s.follow;
     if(fv==="contact") return s.contact;
-    if(fv==="mine") return assignOf(it.id)===user;
+    if(fv==="julia") return assignOf(it.id)==="Julia";
+    if(fv==="gustavo") return assignOf(it.id)==="Gustavo";
     if(fv==="client") return !!it.client;
+    if(fv==="lead") return !!it.lead;
     return false;
   }).length;
 }
@@ -841,20 +1394,8 @@ actionTab("lost-tab","lost");
 actionTab("won-tab","won");
 actionTab("meet-tab","meet");
 
-document.getElementById("user-seg").addEventListener("click", e => {
-  const b = e.target.closest("button"); if(!b) return;
-  user = b.dataset.u;
-  state = store.users[user];
-  save();
-  syncUser();
-  render();
-});
-function syncUser(){
-  document.querySelectorAll("#user-seg button").forEach(x => x.classList.toggle("on", x.dataset.u===user));
-}
-
 document.getElementById("reset").onclick = () => {
-  if(confirm("Limpar os status, contatos e notas de "+user+"?")){ store.users[user]={}; state=store.users[user]; save(); render(); }
+  if(confirm("Limpar TODOS os status, contatos e notas (compartilhado)?")){ store.shared={}; state=store.shared; save(); render(); }
 };
 
 // Modal de adicionar marcas
@@ -872,6 +1413,7 @@ function openModal(){
   document.getElementById("f-size").value="";
   document.getElementById("f-block").value="Sem bloco definido";
   document.getElementById("f-client").checked=false;
+  document.getElementById("f-lead").checked=false;
   document.getElementById("f-prio").checked=false;
   document.getElementById("f-bulk").value="";
   setTab("single");
@@ -894,7 +1436,7 @@ document.getElementById("m-save").onclick = () => {
         id: "custom_" + Date.now() + "_" + i,
         name, loc:null, size:"A confirmar",
         block:"Sem bloco definido",
-        client:false, prio:false, custom:true
+        client:false, lead:true, prio:false, custom:true
       });
     });
     save(); closeModal(); render();
@@ -909,13 +1451,13 @@ document.getElementById("m-save").onclick = () => {
     size: document.getElementById("f-size").value.trim() || "A confirmar",
     block: document.getElementById("f-block").value,
     client: document.getElementById("f-client").checked,
+    lead: document.getElementById("f-lead").checked,
     prio: document.getElementById("f-prio").checked,
     custom: true
   });
   save(); closeModal(); render();
 };
 
-syncUser();
 render();
 initSync();
 </script>
